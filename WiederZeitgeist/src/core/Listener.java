@@ -9,7 +9,7 @@ package core;
  * Interface for creating an object which does something with a message that it receives.
  * 
  * @author Kosmic
- * @param <M>
+ * @param <M> The message type that the listener accepts.
  */
 public interface Listener<M extends Message>{
     

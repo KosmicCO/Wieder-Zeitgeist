@@ -51,6 +51,18 @@ public class ClientListener implements Listener {
             receivers.put(messageType, listenerList);
         }
     }
+    /**
+     * Joins with the client thread.
+     */
+    public void join(){
+        if(clientThread != null){
+            try {
+                clientThread.join();
+            } catch (InterruptedException ex) {
+                throw new RuntimeException("Joining thread caused InterruptException.");
+            }
+        }
+    }
     
     @Override
     public synchronized void receiveMessage(Message message) {
@@ -92,4 +104,5 @@ public class ClientListener implements Listener {
     public void stop() {
         running = false;
     }
+    
 }

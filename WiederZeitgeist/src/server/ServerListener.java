@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The main threaded singleton listener for the server section of the game.
@@ -49,6 +51,18 @@ public class ServerListener implements Listener{
             List listenerList = new ArrayList();
             listenerList.add(listener);
             receivers.put(messageType, listenerList);
+        }
+    }
+    /**
+     * Joins with the server thread.
+     */
+    public void join(){
+        if(clientThread != null){
+            try {
+                clientThread.join();
+            } catch (InterruptedException ex) {
+                throw new RuntimeException("Joining thread caused InterruptException.");
+            }
         }
     }
     
@@ -92,4 +106,5 @@ public class ServerListener implements Listener{
     public void stop() {
         running = false;
     }
+    
 }

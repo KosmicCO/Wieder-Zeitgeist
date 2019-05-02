@@ -15,6 +15,9 @@ import java.util.function.Function;
  */
 public class Vector {
 
+    /**
+     * Double nearer to each other than EPSILON are considered the same.
+     */
     public static final double EPSILON = 1E-24;
     
     /**
@@ -54,6 +57,9 @@ public class Vector {
         return new Vector(d);
     }
 
+    /**
+     * The dimension of the vector.
+     */
     public final int dim;
     private final double[] vec;
 

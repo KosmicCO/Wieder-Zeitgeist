@@ -102,7 +102,15 @@ public class Matrix {
         return m;
     }
     
-    public final int dimX, dimY;
+    /**
+     * The x dimension of the matrix.
+     */
+    public final int dimX;
+
+    /**
+     * The y dimension of the matrix.
+     */
+    public final int dimY;
     private final double[][] mat;
 
     /**
