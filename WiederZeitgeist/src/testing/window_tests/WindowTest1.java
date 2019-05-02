@@ -19,7 +19,7 @@ public class WindowTest1 {
 
     /**
      * Tests the basic functionality of the window and input.
-     * @param args
+     * @param args Does not accept arguments.
      */
     public static void main(String[] args) {
 
