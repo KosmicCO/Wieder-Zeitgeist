@@ -6,16 +6,19 @@
 package client.gui;
 
 /**
- * Creates the context for a render system to be added as the single component to the GuiManager to make very different rendering algorithms interchangeable.
+ * Creates the context for a render system to be added as the single component
+ * to the GuiManager to make very different rendering algorithms
+ * interchangeable.
+ *
  * @author TARS
  */
 public interface RenderContext extends Component {
-    
+
     /**
      * Creates the necessary context for the renderer.
      */
     public void create();
-    
+
     /**
      * Destructs the context for the renderer to make way for the next context.
      */

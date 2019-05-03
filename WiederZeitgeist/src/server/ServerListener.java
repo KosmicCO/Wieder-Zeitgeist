@@ -18,16 +18,18 @@ import java.util.logging.Logger;
 
 /**
  * The main threaded singleton listener for the server section of the game.
+ *
  * @author TARS
  */
-public class ServerListener implements Listener{
+public class ServerListener implements Listener {
 
     /**
-     * The threaded listener which acts as a head for all the messages going to the client section from elsewhere.
+     * The threaded listener which acts as a head for all the messages going to
+     * the client section from elsewhere.
      */
     public static final ServerListener SERVER_LISTENER = new ServerListener();
-    
-    private Thread clientThread;
+
+    private volatile Thread serverThread;
     private final Queue<Message> messageQueue;
     private final Map<Class<? extends Message>, List<Listener>> receivers;
     private boolean running;
@@ -37,38 +39,44 @@ public class ServerListener implements Listener{
         messageQueue = new ConcurrentLinkedQueue();
         running = false;
     }
-    
+
     /**
-     * Adds a listener to be alerted when a message that it subscribed to was received.
+     * Adds a listener to be alerted when a message that it subscribed to was
+     * received.
+     *
      * @param <M> The message type to subscribe to.
      * @param messageType The message type to subscribe to.
      * @param listener A listener which specifically takes the message type M.
      */
     public synchronized <M extends Message> void addListener(Class<M> messageType, Listener<M> listener) {
         if (receivers.containsKey(messageType)) {
-            receivers.get(messageType).add(listener);
+            if (!receivers.get(messageType).contains(listener)) {
+                receivers.get(messageType).add(listener);
+            }
         } else {
             List listenerList = new ArrayList();
             listenerList.add(listener);
             receivers.put(messageType, listenerList);
         }
     }
+
     /**
      * Joins with the server thread.
      */
-    public void join(){
-        if(clientThread != null){
+    public void join() {
+        Thread st = serverThread;
+        if (st != null) {
             try {
-                clientThread.join();
+                st.join();
             } catch (InterruptedException ex) {
                 throw new RuntimeException("Joining thread caused InterruptException.");
             }
         }
     }
-    
+
     @Override
     public synchronized void receiveMessage(Message message) {
-        if(!receivers.containsKey(message.getClass())){
+        if (!receivers.containsKey(message.getClass())) {
             receivers.put(message.getClass(), new ArrayList());
         }
         messageQueue.add(message);
@@ -76,15 +84,16 @@ public class ServerListener implements Listener{
 
     /**
      * Starts the SERVER_LISTENER thread.
+     *
      * @param init The initial code to be run.
      * @param close The final code to be run when stop() is called.
      */
     public void start(Runnable init, Runnable close) {
-        if (clientThread != null) {
+        if (serverThread != null) {
             return;
         }
         running = true;
-        clientThread = new Thread(() -> {
+        serverThread = new Thread(() -> {
             init.run();
             while (running) {
                 if (!messageQueue.isEmpty()) {
@@ -95,9 +104,9 @@ public class ServerListener implements Listener{
                 }
             }
             close.run();
-            clientThread = null;
+            serverThread = null;
         });
-        clientThread.start();
+        serverThread.start();
     }
 
     /**
@@ -106,5 +115,5 @@ public class ServerListener implements Listener{
     public void stop() {
         running = false;
     }
-    
+
 }

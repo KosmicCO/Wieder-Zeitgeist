@@ -16,16 +16,18 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * The main threaded singleton listener for the client section of the game.
+ *
  * @author Kosmic
  */
 public class ClientListener implements Listener {
 
     /**
-     * The threaded listener which acts as a head for all the messages going to the client section from elsewhere.
+     * The threaded listener which acts as a head for all the messages going to
+     * the client section from elsewhere.
      */
     public static final ClientListener CLIENT_LISTENER = new ClientListener();
-    
-    private Thread clientThread;
+
+    private volatile Thread clientThread;
     private final Queue<Message> messageQueue;
     private final Map<Class<? extends Message>, List<Listener>> receivers;
     private boolean running;
@@ -35,38 +37,44 @@ public class ClientListener implements Listener {
         messageQueue = new ConcurrentLinkedQueue();
         running = false;
     }
-    
+
     /**
-     * Adds a listener to be alerted when a message that it subscribed to was received.
+     * Adds a listener to be alerted when a message that it subscribed to was
+     * received.
+     *
      * @param <M> The message type to subscribe to.
      * @param messageType The message type to subscribe to.
      * @param listener A listener which specifically takes the message type M.
      */
     public synchronized <M extends Message> void addListener(Class<M> messageType, Listener<M> listener) {
         if (receivers.containsKey(messageType)) {
-            receivers.get(messageType).add(listener);
+            if (!receivers.get(messageType).contains(listener)) {
+                receivers.get(messageType).add(listener);
+            }
         } else {
             List listenerList = new ArrayList();
             listenerList.add(listener);
             receivers.put(messageType, listenerList);
         }
     }
+
     /**
      * Joins with the client thread.
      */
-    public void join(){
-        if(clientThread != null){
+    public void join() {
+        Thread ct = clientThread;
+        if (ct != null) {
             try {
-                clientThread.join();
+                ct.join();
             } catch (InterruptedException ex) {
                 throw new RuntimeException("Joining thread caused InterruptException.");
             }
         }
     }
-    
+
     @Override
     public synchronized void receiveMessage(Message message) {
-        if(!receivers.containsKey(message.getClass())){
+        if (!receivers.containsKey(message.getClass())) {
             receivers.put(message.getClass(), new ArrayList());
         }
         messageQueue.add(message);
@@ -74,6 +82,7 @@ public class ClientListener implements Listener {
 
     /**
      * Starts the CLIENT_LISTENER thread.
+     *
      * @param init The initial code to be run.
      * @param close The final code to be run when stop() is called.
      */
@@ -104,5 +113,5 @@ public class ClientListener implements Listener {
     public void stop() {
         running = false;
     }
-    
+
 }

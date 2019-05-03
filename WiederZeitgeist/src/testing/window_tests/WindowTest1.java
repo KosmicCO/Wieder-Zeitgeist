@@ -13,12 +13,14 @@ import util.vec.Vector;
 
 /**
  * Testing whether the basic functions of the window and input works properly.
+ *
  * @author TARS
  */
 public class WindowTest1 {
 
     /**
      * Tests the basic functionality of the window and input.
+     *
      * @param args Does not accept arguments.
      */
     public static void main(String[] args) {
@@ -26,7 +28,7 @@ public class WindowTest1 {
         CLIENT_LISTENER.addListener(KeyPress.class, m -> {
             System.out.println(m.key + " " + m.state + " " + m.changed);
         });
-        
+
         CLIENT_LISTENER.addListener(WindowShouldClose.class, m -> {
             CLIENT_LISTENER.stop();
         });

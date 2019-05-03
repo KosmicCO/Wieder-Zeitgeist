@@ -10,10 +10,11 @@ import util.vec.Vector;
 
 /**
  * Transmits the state of the mouse wheel.
+ *
  * @author TARS
  */
 public class MouseWheel implements Message {
-    
+
     /**
      * The current wheel offset.
      */
@@ -23,13 +24,14 @@ public class MouseWheel implements Message {
      * The delta vector of the offset.
      */
     public final Vector wheelDelta;
-    
+
     /**
      * Default constructor.
+     *
      * @param wheel The current wheel offset.
      * @param delta The delta of the wheel offset.
      */
-    public MouseWheel(Vector wheel, Vector delta){
+    public MouseWheel(Vector wheel, Vector delta) {
         wheelOffset = wheel;
         wheelDelta = delta;
     }

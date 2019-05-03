@@ -10,10 +10,11 @@ import util.vec.Vector;
 
 /**
  * Transmits the state of the mouse buttons.
+ *
  * @author TARS
  */
 public class MouseButton implements Message {
-    
+
     /**
      * The button to which this message applies.
      */
@@ -33,15 +34,16 @@ public class MouseButton implements Message {
      * The mouse position at the time of the click;
      */
     public final Vector mousePos;
-    
+
     /**
      * Default constructor.
+     *
      * @param b The button.
      * @param s The state.
      * @param c Whether the state just changed.
      * @param mouse The mouse position at the time of the button press.
      */
-    public MouseButton(int b, boolean s, boolean c, Vector mouse){
+    public MouseButton(int b, boolean s, boolean c, Vector mouse) {
         button = b;
         state = s;
         changed = c;

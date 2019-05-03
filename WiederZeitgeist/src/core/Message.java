@@ -7,8 +7,9 @@ package core;
 
 /**
  * A type to spread information between Listeners.
+ *
  * @author Kosmic
  */
 public interface Message {
-    
+
 }

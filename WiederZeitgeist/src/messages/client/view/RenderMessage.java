@@ -9,8 +9,9 @@ import core.Message;
 
 /**
  * A message to signal to render the next frame.
+ *
  * @author TARS
  */
-public class RenderMessage implements Message{
-    
+public class RenderMessage implements Message {
+
 }

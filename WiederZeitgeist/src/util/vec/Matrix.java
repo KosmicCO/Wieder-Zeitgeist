@@ -6,13 +6,16 @@
 package util.vec;
 
 /**
- * An immutable linear algebra matrix. Has methods which facilitate with general linear algebra as well as with graphics.
+ * An immutable linear algebra matrix. Has methods which facilitate with general
+ * linear algebra as well as with graphics.
+ *
  * @author Kosmic
  */
 public class Matrix {
-    
+
     /**
      * Create the identity matrix.
+     *
      * @param dim The dimension of the square identity matrix.
      * @return The square identity matrix of dimension dim.
      */
@@ -23,14 +26,17 @@ public class Matrix {
         }
         return m;
     }
-    
+
     /**
-     * Creates a new projective matrix for 2D graphics. The output matrix is a square 3x3 matrix.
+     * Creates a new projective matrix for 2D graphics. The output matrix is a
+     * square 3x3 matrix.
+     *
      * @param left Left value.
      * @param right Right value.
      * @param bottom Bottom value.
      * @param top Top value.
-     * @return The 3x3 matrix representing the projection matrix for 2D graphics.
+     * @return The 3x3 matrix representing the projection matrix for 2D
+     * graphics.
      */
     public static Matrix projective2d(double left, double right, double bottom, double top) {
         Matrix m = new Matrix(3, 3);
@@ -41,16 +47,19 @@ public class Matrix {
         m.mat[2][2] = 1;
         return m;
     }
-    
+
     /**
-     * Creates a new projective matrix for 3D graphics. The output matrix is a square 4x4 matrix.
+     * Creates a new projective matrix for 3D graphics. The output matrix is a
+     * square 4x4 matrix.
+     *
      * @param left Left value.
      * @param right Right value.
      * @param bottom Bottom value.
      * @param top Top value.
      * @param fore Forward value.
      * @param back Back value.
-     * @return The 4x4 matrix representing the projection matrix for 3D graphics.
+     * @return The 4x4 matrix representing the projection matrix for 3D
+     * graphics.
      */
     public static Matrix projective3d(double left, double right, double bottom, double top, double fore, double back) {
         Matrix m = new Matrix(4, 4);
@@ -63,9 +72,10 @@ public class Matrix {
         m.mat[3][3] = 1;
         return m;
     }
-    
+
     /**
      * Creates a 2D world matrix for 2D graphics.
+     *
      * @param position The position.
      * @param unitDimensions The units.
      * @return The 3x3 matrix representing the 2D world matrix.
@@ -81,9 +91,10 @@ public class Matrix {
         m.mat[2][2] = 1;
         return m;
     }
-    
+
     /**
      * Creates a 3D world matrix for 3D graphics.
+     *
      * @param position The position.
      * @param unitDimensions The units.
      * @return The 4x4 matrix representing the 3D world matrix.
@@ -101,7 +112,7 @@ public class Matrix {
         m.mat[3][3] = 1;
         return m;
     }
-    
+
     /**
      * The x dimension of the matrix.
      */
@@ -114,7 +125,9 @@ public class Matrix {
     private final double[][] mat;
 
     /**
-     * Creates a new matrix from a 2D array. The dimY of the resulting matrix is the same as m.length, unless m[0].length == 0.
+     * Creates a new matrix from a 2D array. The dimY of the resulting matrix is
+     * the same as m.length, unless m[0].length == 0.
+     *
      * @param m The array matrix.
      */
     public Matrix(double[][] m) {
@@ -141,6 +154,7 @@ public class Matrix {
 
     /**
      * Create a new matrix full of zeros of dimension dy by dx.
+     *
      * @param dy The dimension in the y direction.
      * @param dx The dimension in the x direction.
      */
@@ -152,6 +166,7 @@ public class Matrix {
 
     /**
      * Gets the value at the index (indY, indX).
+     *
      * @param indY The y index.
      * @param indX The x index.
      * @return The value of the matrix at the specified index.
@@ -164,11 +179,14 @@ public class Matrix {
     }
 
     /**
-     * Creates a new matrix which is the same as the old one, excepting the index (indY, indX) which has the value value.
+     * Creates a new matrix which is the same as the old one, excepting the
+     * index (indY, indX) which has the value value.
+     *
      * @param indY The y index.
      * @param indX The x index.
      * @param value The new value to replace with.
-     * @return A new matrix with the same values except for value at (indY, indX).
+     * @return A new matrix with the same values except for value at (indY,
+     * indX).
      */
     public Matrix replace(int indY, int indX, double value) {
         if (indY < 0 || indY >= dimY || indX < 0 || indX >= dimX) {
@@ -178,9 +196,11 @@ public class Matrix {
         nm.mat[indY][indX] = value;
         return nm;
     }
-    
+
     /**
-     * Creates an 1D array containing the matrix values as doubles organized columns first.
+     * Creates an 1D array containing the matrix values as doubles organized
+     * columns first.
+     *
      * @return An array of length dimY * dimX.
      */
     public double[] toDoublesByCol() {
@@ -196,7 +216,9 @@ public class Matrix {
     }
 
     /**
-     * Creates an 1D array containing the matrix values as doubles organized rows first.
+     * Creates an 1D array containing the matrix values as doubles organized
+     * rows first.
+     *
      * @return An array of length dimY * dimX.
      */
     public double[] toDoublesByRow() {
@@ -210,9 +232,11 @@ public class Matrix {
         }
         return ma;
     }
-    
+
     /**
-     * Creates an 1D array containing the matrix values as floats organized columns first.
+     * Creates an 1D array containing the matrix values as floats organized
+     * columns first.
+     *
      * @return An array of length dimY * dimX.
      */
     public float[] toFloatsByCol() {
@@ -226,9 +250,11 @@ public class Matrix {
         }
         return ma;
     }
-    
+
     /**
-     * Creates an 1D array containing the matrix values as floats organized rows first.
+     * Creates an 1D array containing the matrix values as floats organized rows
+     * first.
+     *
      * @return An array of length dimY * dimX.
      */
     public float[] toFloatsByRow() {
@@ -242,14 +268,14 @@ public class Matrix {
         }
         return ma;
     }
-    
+
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < dimY; i++) {
             s.append("|");
             for (int j = 0; j < dimX; j++) {
-                if(j != 0){
+                if (j != 0) {
                     s.append(" ");
                 }
                 s.append((float) mat[i][j]);

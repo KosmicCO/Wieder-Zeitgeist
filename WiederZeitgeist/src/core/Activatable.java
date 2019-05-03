@@ -20,6 +20,7 @@ public interface Activatable {
 
     /**
      * Runs r in between activating and deactivating the Activatables.
+     *
      * @param r The runnable to run.
      * @param as The Activatables to activate and deactivate to run r.
      */
@@ -35,6 +36,7 @@ public interface Activatable {
 
     /**
      * Runs r in between activating and deactivating the Activatables.
+     *
      * @param r The runnable to run.
      * @param as The Activatables to activate and deactivate to run r.
      */

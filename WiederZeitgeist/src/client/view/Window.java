@@ -30,11 +30,11 @@ import util.vec.Vector;
  * @author TARS
  */
 public class Window {
-
+    
     private static double previousTime;
     private static Consumer<Double> render;
     private static Window window;
-
+    
     private static void checkInit() {
         if (window == null) {
             throw new RuntimeException("Window has not been initialized yet.");
@@ -99,7 +99,7 @@ public class Window {
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
-
+        
         window = new Window(name, dim, VColor.BLACK);
 
         // This line is critical for LWJGL's interoperation with GLFW's
@@ -108,13 +108,13 @@ public class Window {
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
         GL.createCapabilities();
-
+        
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         GLUtil.setupDebugMessageCallback();
-
+        
         Input.initialize();
-
+        
         CLIENT_LISTENER.addListener(RenderMessage.class, m -> {
             double newTime = Utils.getTime();
             glfwPollEvents();
@@ -140,7 +140,7 @@ public class Window {
         checkInit();
         window.background = back;
     }
-
+    
     static void setCursorPosCallback(GLFWCursorPosCallbackI cursorPosCallback) {
         checkInit();
         glfwSetCursorPosCallback(window.windowID, cursorPosCallback);
@@ -156,12 +156,12 @@ public class Window {
         // resize?
         window.dimensions = dim;
     }
-
+    
     static void setKeyCallback(GLFWKeyCallbackI keyCallback) {
         checkInit();
         glfwSetKeyCallback(window.windowID, keyCallback);
     }
-
+    
     static void setMouseButtonCallback(GLFWMouseButtonCallbackI mouseButtonCallback) {
         checkInit();
         glfwSetMouseButtonCallback(window.windowID, mouseButtonCallback);
@@ -176,7 +176,7 @@ public class Window {
         checkInit();
         render = r;
     }
-
+    
     static void setScrollCallback(GLFWScrollCallbackI scrollCallback) {
         checkInit();
         glfwSetScrollCallback(window.windowID, scrollCallback);
@@ -192,14 +192,14 @@ public class Window {
         window.name = name;
         GLFW.glfwSetWindowTitle(window.windowID, name);
     }
-
+    
     private VColor background;
     private Vector dimensions;
     private String name;
     private final long windowID;
-
+    
     private Window(String name, Vector dim, VColor back) {
-
+        
         this.name = name;
         dimensions = dim;
         background = back;
@@ -245,7 +245,7 @@ public class Window {
         // Make the window visible
         glfwShowWindow(windowID);
     }
-
+    
     private void cleanup() {
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(windowID);

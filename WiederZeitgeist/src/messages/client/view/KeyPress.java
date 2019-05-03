@@ -9,10 +9,11 @@ import core.Message;
 
 /**
  * Transmits the new state of a certain key.
+ *
  * @author TARS
  */
 public class KeyPress implements Message {
-    
+
     /**
      * The key to which this message applies.
      */
@@ -27,14 +28,15 @@ public class KeyPress implements Message {
      * Whether the state of the key just changed.
      */
     public final boolean changed;
-    
+
     /**
      * Default constructor.
+     *
      * @param k The key.
      * @param s The state.
      * @param c Whether the state just changed.
      */
-    public KeyPress(int k, boolean s, boolean c){
+    public KeyPress(int k, boolean s, boolean c) {
         key = k;
         state = s;
         changed = c;

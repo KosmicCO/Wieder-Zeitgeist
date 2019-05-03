@@ -12,6 +12,7 @@ import util.vec.Vector;
 
 /**
  * A component which holds other components in an order.
+ *
  * @author TARS
  */
 public class Container implements Component {
@@ -27,6 +28,7 @@ public class Container implements Component {
 
     /**
      * Adds the component to render and receive messages first.
+     *
      * @param comp The component to add to top.
      */
     public void addTop(Component comp) {
@@ -49,9 +51,10 @@ public class Container implements Component {
         }
         return stop;
     }
-    
+
     /**
      * Removes the given component from the container.
+     *
      * @param comp The component to remove from the container.
      */
     public void remove(Component comp) {

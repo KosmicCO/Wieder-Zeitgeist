@@ -6,16 +6,19 @@
 package core;
 
 /**
- * Interface for creating an object which does something with a message that it receives.
- * 
+ * Interface for creating an object which does something with a message that it
+ * receives.
+ *
  * @author Kosmic
  * @param <M> The message type that the listener accepts.
  */
-public interface Listener<M extends Message>{
-    
+public interface Listener<M extends Message> {
+
     /**
      * Does something with the message it receives.
-     * @param message Receiving message. It is left as M extends Message so that listeners can use generic assignment to auto-cast messages.
+     *
+     * @param message Receiving message. It is left as M extends Message so that
+     * listeners can use generic assignment to auto-cast messages.
      */
     public void receiveMessage(M message);
 }

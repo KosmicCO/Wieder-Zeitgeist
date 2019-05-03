@@ -16,7 +16,9 @@ import java.util.function.Function;
 public class IntVector {
 
     /**
-     * Creates an int vector with a one in index index and zeros everywhere else.
+     * Creates an int vector with a one in index index and zeros everywhere
+     * else.
+     *
      * @param d The dimension of the vector.
      * @param index The index which contains a one.
      * @return A d dimensional int vector.
@@ -31,7 +33,8 @@ public class IntVector {
     }
 
     /**
-     * Creates an int vector with ones in every index. 
+     * Creates an int vector with ones in every index.
+     *
      * @param d The dimension of the vector.
      * @return A d dimensional int vector.
      */
@@ -45,6 +48,7 @@ public class IntVector {
 
     /**
      * Creates a d dimensional zero vector.
+     *
      * @param d The dimension of the vector.
      * @return A d dimensional int vector.
      */
@@ -59,7 +63,9 @@ public class IntVector {
     private final int[] vec;
 
     /**
-     * Creates an int vector from inputs. The dimension is the same as the number of inputs.
+     * Creates an int vector from inputs. The dimension is the same as the
+     * number of inputs.
+     *
      * @param v The ordered inputs.
      */
     public IntVector(int... v) {
@@ -69,6 +75,7 @@ public class IntVector {
 
     /**
      * Creates an int vector from a vector of doubles by casting to (int).
+     *
      * @param v The int vector from the double vector.
      */
     public IntVector(Vector v) {
@@ -91,8 +98,10 @@ public class IntVector {
 
     /**
      * Adds two int vectors together.
+     *
      * @param v The other int vector.
-     * @return A new int vector where each index is the sum of the same indeces of the inputs.
+     * @return A new int vector where each index is the sum of the same indeces
+     * of the inputs.
      */
     public IntVector add(IntVector v) {
         checkDim(v);
@@ -105,9 +114,10 @@ public class IntVector {
 
     /**
      * Asserts that the dimension of the int vector is d.
+     *
      * @param d The dimension that the int vector must be equal to.
      */
-    public void assertSize(int d){
+    public void assertSize(int d) {
         if (d < 0) {
             throw new IllegalArgumentException("Dimension cannot be smaller than 0");
         }
@@ -115,10 +125,13 @@ public class IntVector {
     }
 
     /**
-     * Applies bimapper to each index of the int vectors and creates a new int vector from the output.
+     * Applies bimapper to each index of the int vectors and creates a new int
+     * vector from the output.
+     *
      * @param v The other int vector.
      * @param bimapper The bioperator to apply to each index.
-     * @return A new int vector where each index is the result of the bimapper of the same indeces of the inputs.
+     * @return A new int vector where each index is the result of the bimapper
+     * of the same indeces of the inputs.
      */
     public IntVector bimap(IntVector v, BiFunction<Integer, Integer, Integer> bimapper) {
         checkDim(v);
@@ -131,6 +144,7 @@ public class IntVector {
 
     /**
      * Throws an exception if the other int vector is not the same dimension.
+     *
      * @param v The other int vector.
      */
     protected final void checkDim(IntVector v) {
@@ -140,7 +154,9 @@ public class IntVector {
     }
 
     /**
-     * Returns true if each int vector is in the same quadrant and each index of v is less than or equal to each index of this.
+     * Returns true if each int vector is in the same quadrant and each index of
+     * v is less than or equal to each index of this.
+     *
      * @param v The other int vector.
      * @return Whether v is contained by this int vector by the definition.
      */
@@ -157,7 +173,9 @@ public class IntVector {
     }
 
     /**
-     * Returns true if each int vector is in the same quadrant and each index of v is less than each index of this.
+     * Returns true if each int vector is in the same quadrant and each index of
+     * v is less than each index of this.
+     *
      * @param v The other int vector.
      * @return Whether v is contained by this int vector by the definition.
      */
@@ -172,9 +190,10 @@ public class IntVector {
         }
         return true;
     }
-    
+
     /**
      * Returns the crossproduct between two 3D int vectors.
+     *
      * @param v The other int vector, which is to the right in this cross v.
      * @return The 3D crossproduct int vector.
      */
@@ -191,6 +210,7 @@ public class IntVector {
 
     /**
      * Returns the dot product between the two int vectors.
+     *
      * @param v The other int vector.
      * @return The dot product.
      */
@@ -202,7 +222,7 @@ public class IntVector {
         }
         return sum;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -220,8 +240,11 @@ public class IntVector {
 
     /**
      * Applies folder to aggregate values from index 0 to dim-1.
+     *
      * @param b The initial value.
-     * @param folder The bioperator to apply to the int vector. The first input should be the previous value, followed by the value at the next index of the int vector.
+     * @param folder The bioperator to apply to the int vector. The first input
+     * should be the previous value, followed by the value at the next index of
+     * the int vector.
      * @return The aggregate after folding the int vector.
      */
     public double foldl(double b, BiFunction<Integer, Double, Double> folder) {
@@ -234,8 +257,11 @@ public class IntVector {
 
     /**
      * Applies folder to aggregate values from index dim-1 to 0.
+     *
      * @param b The initial value.
-     * @param folder The bioperator to apply to the int vector. The first input should be the previous value, followed by the value at the next index of the int vector.
+     * @param folder The bioperator to apply to the int vector. The first input
+     * should be the previous value, followed by the value at the next index of
+     * the int vector.
      * @return The aggregate after folding the int vector.
      */
     public double foldr(double b, BiFunction<Integer, Double, Double> folder) {
@@ -248,6 +274,7 @@ public class IntVector {
 
     /**
      * Returns the value at the given index of the int vector.
+     *
      * @param index The index to poll.
      * @return The value at the given index.
      */
@@ -257,7 +284,7 @@ public class IntVector {
         }
         return vec[index];
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 3;
@@ -266,6 +293,7 @@ public class IntVector {
 
     /**
      * Returns the magnitude of the int vector.
+     *
      * @return The int vector's length.
      */
     public double mag() {
@@ -274,6 +302,7 @@ public class IntVector {
 
     /**
      * Returns the square of the magnitude of the int vector.
+     *
      * @return The int vector's length squared.
      */
     public int magSquared() {
@@ -282,6 +311,7 @@ public class IntVector {
 
     /**
      * Creates a new int vector with mapper applied to each index.
+     *
      * @param mapper The unary operator to apply to each index.
      * @return A new int vector.
      */
@@ -295,6 +325,7 @@ public class IntVector {
 
     /**
      * Multiplies the int vector by a scalar.
+     *
      * @param scalar The scalar.
      * @return A new scaled int vector.
      */
@@ -308,6 +339,7 @@ public class IntVector {
 
     /**
      * Negates every index of the int vector.
+     *
      * @return A new negated int vector.
      */
     public IntVector neg() {
@@ -315,10 +347,12 @@ public class IntVector {
     }
 
     /**
-     * Creates a new int vector with every entry the same except for the entry at index, which has the value value.
+     * Creates a new int vector with every entry the same except for the entry
+     * at index, which has the value value.
+     *
      * @param index The index to change.
      * @param value The value to put into index.
-     * @return A new int vector with the index  at index changed to value.
+     * @return A new int vector with the index at index changed to value.
      */
     public IntVector replace(int index, int value) {
         if (index < 0 || index >= dim) {
@@ -330,7 +364,9 @@ public class IntVector {
     }
 
     /**
-     * Creates a new int vector with dimension d such that every entry is either the same as the original vector, or zero.
+     * Creates a new int vector with dimension d such that every entry is either
+     * the same as the original vector, or zero.
+     *
      * @param d The dimension of the int vector.
      * @return A resized int vector.
      */
@@ -345,6 +381,7 @@ public class IntVector {
 
     /**
      * Subtracts v from this int vector.
+     *
      * @param v The other int vector.
      * @return The resultant int vector from the subtraction.
      */
@@ -359,8 +396,10 @@ public class IntVector {
 
     /**
      * Tensor multiplies the two int vectors.
+     *
      * @param v The other int vector.
-     * @return The resultant int vector where each index is the product of the values at the same index from the other two int vectors.
+     * @return The resultant int vector where each index is the product of the
+     * values at the same index from the other two int vectors.
      */
     public IntVector tensorMult(IntVector v) {
         checkDim(v);
@@ -370,7 +409,7 @@ public class IntVector {
         }
         return nv;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder("<");
@@ -386,6 +425,7 @@ public class IntVector {
 
     /**
      * Gets the value at index zero.
+     *
      * @return The value at index zero.
      */
     public int x() {
@@ -394,6 +434,7 @@ public class IntVector {
 
     /**
      * Sets the value at index zero.
+     *
      * @param value The value to replace with.
      * @return A new int vector with the zeroth index changed to value.
      */
@@ -403,6 +444,7 @@ public class IntVector {
 
     /**
      * Gets the value at index one.
+     *
      * @return The value at index one.
      */
     public int y() {
@@ -411,6 +453,7 @@ public class IntVector {
 
     /**
      * Sets the value at index one.
+     *
      * @param value The value to replace with.
      * @return A new int vector with the first index changed to value.
      */
@@ -420,6 +463,7 @@ public class IntVector {
 
     /**
      * Gets the value at index two.
+     *
      * @return The value at index two.
      */
     public int z() {
@@ -428,6 +472,7 @@ public class IntVector {
 
     /**
      * Sets the value at index two.
+     *
      * @param value The value to replace with.
      * @return A new int vector with the second index changed to value.
      */

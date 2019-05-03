@@ -10,7 +10,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * An immutable linear algebra vector. Has methods which facilitate with general linear algebra as well as with graphics.
+ * An immutable linear algebra vector. Has methods which facilitate with general
+ * linear algebra as well as with graphics.
+ *
  * @author Kosmic
  */
 public class Vector {
@@ -19,9 +21,10 @@ public class Vector {
      * Double nearer to each other than EPSILON are considered the same.
      */
     public static final double EPSILON = 1E-24;
-    
+
     /**
      * Creates a vector with a one in index index and zeros everywhere else.
+     *
      * @param d The dimension of the vector.
      * @param index The index which contains a one.
      * @return A d dimensional vector.
@@ -34,9 +37,10 @@ public class Vector {
         nv.vec[index] = 1;
         return nv;
     }
-    
+
     /**
-     * Creates a vector with ones in every index. 
+     * Creates a vector with ones in every index.
+     *
      * @param d The dimension of the vector.
      * @return A d dimensional vector.
      */
@@ -47,9 +51,10 @@ public class Vector {
         }
         return nv;
     }
-    
+
     /**
      * Creates a d dimensional zero vector.
+     *
      * @param d The dimension of the vector.
      * @return A d dimensional vector.
      */
@@ -64,7 +69,9 @@ public class Vector {
     private final double[] vec;
 
     /**
-     * Creates a vector from inputs. The dimension is the same as the number of inputs.
+     * Creates a vector from inputs. The dimension is the same as the number of
+     * inputs.
+     *
      * @param v The ordered inputs.
      */
     public Vector(double... v) {
@@ -79,6 +86,7 @@ public class Vector {
 
     /**
      * Creates a new vector of zeros with dimension d.
+     *
      * @param d The dimension of the vector.
      */
     protected Vector(int d) {
@@ -88,8 +96,10 @@ public class Vector {
 
     /**
      * Adds two vectors together.
+     *
      * @param v The other vector.
-     * @return A new vector where each index is the sum of the same indeces of the inputs.
+     * @return A new vector where each index is the sum of the same indeces of
+     * the inputs.
      */
     public Vector add(Vector v) {
         checkDim(v);
@@ -102,6 +112,7 @@ public class Vector {
 
     /**
      * Asserts that the dimension of the vector is d.
+     *
      * @param d The dimension that the vector must be equal to.
      */
     public void assertSize(int d) {
@@ -112,10 +123,13 @@ public class Vector {
     }
 
     /**
-     * Applies bimapper to each index of the vectors and creates a new vector from the output.
+     * Applies bimapper to each index of the vectors and creates a new vector
+     * from the output.
+     *
      * @param v The other vector.
      * @param bimapper The bioperator to apply to each index.
-     * @return A new vector where each index is the result of the bimapper of the same indeces of the inputs.
+     * @return A new vector where each index is the result of the bimapper of
+     * the same indeces of the inputs.
      */
     public Vector bimap(Vector v, BiFunction<Double, Double, Double> bimapper) {
         checkDim(v);
@@ -128,6 +142,7 @@ public class Vector {
 
     /**
      * Throws an exception if the other vector is not the same dimension.
+     *
      * @param v The other vector.
      */
     protected final void checkDim(Vector v) {
@@ -137,7 +152,9 @@ public class Vector {
     }
 
     /**
-     * Returns true if each vector is in the same quadrant and each index of v is less than or equal to each index of this.
+     * Returns true if each vector is in the same quadrant and each index of v
+     * is less than or equal to each index of this.
+     *
      * @param v The other vector.
      * @return Whether v is contained by this vector by the definition.
      */
@@ -154,7 +171,9 @@ public class Vector {
     }
 
     /**
-     * Returns true if each vector is in the same quadrant and each index of v is less than each index of this.
+     * Returns true if each vector is in the same quadrant and each index of v
+     * is less than each index of this.
+     *
      * @param v The other vector.
      * @return Whether v is contained by this vector by the definition.
      */
@@ -172,6 +191,7 @@ public class Vector {
 
     /**
      * Returns the crossproduct between two 3D vectors.
+     *
      * @param v The other vector, which is to the right in this cross v.
      * @return The 3D crossproduct vector.
      */
@@ -188,6 +208,7 @@ public class Vector {
 
     /**
      * Returns the dot product between the two vectors.
+     *
      * @param v The other vector.
      * @return The dot product.
      */
@@ -199,7 +220,7 @@ public class Vector {
         }
         return sum;
     }
-    
+
     @Override
     public boolean equals(Object v) {
         if (!(v instanceof Vector)) {
@@ -219,8 +240,11 @@ public class Vector {
 
     /**
      * Applies folder to aggregate values from index 0 to dim-1.
+     *
      * @param b The initial value.
-     * @param folder The bioperator to apply to the vector. The first input should be the previous value, followed by the value at the next index of the vector.
+     * @param folder The bioperator to apply to the vector. The first input
+     * should be the previous value, followed by the value at the next index of
+     * the vector.
      * @return The aggregate after folding the vector.
      */
     public double foldl(double b, BiFunction<Double, Double, Double> folder) {
@@ -233,8 +257,11 @@ public class Vector {
 
     /**
      * Applies folder to aggregate values from index dim-1 to 0.
+     *
      * @param b The initial value.
-     * @param folder The bioperator to apply to the vector. The first input should be the previous value, followed by the value at the next index of the vector.
+     * @param folder The bioperator to apply to the vector. The first input
+     * should be the previous value, followed by the value at the next index of
+     * the vector.
      * @return The aggregate after folding the vector.
      */
     public double foldr(double b, BiFunction<Double, Double, Double> folder) {
@@ -247,6 +274,7 @@ public class Vector {
 
     /**
      * Returns the value at the given index of the vector.
+     *
      * @param index The index to poll.
      * @return The value at the given index.
      */
@@ -256,7 +284,7 @@ public class Vector {
         }
         return vec[index];
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 3;
@@ -266,6 +294,7 @@ public class Vector {
 
     /**
      * Returns the magnitude of the vector.
+     *
      * @return The vector's length.
      */
     public double mag() {
@@ -274,6 +303,7 @@ public class Vector {
 
     /**
      * Returns the square of the magnitude of the vector.
+     *
      * @return The vector's length squared.
      */
     public double magSquared() {
@@ -282,6 +312,7 @@ public class Vector {
 
     /**
      * Creates a new vector with mapper applied to each index.
+     *
      * @param mapper The unary operator to apply to each index.
      * @return A new vector.
      */
@@ -295,6 +326,7 @@ public class Vector {
 
     /**
      * Multiplies the vector by a scalar.
+     *
      * @param scalar The scalar.
      * @return A new scaled vector.
      */
@@ -308,6 +340,7 @@ public class Vector {
 
     /**
      * Negates every index of the vector.
+     *
      * @return A new negated vector.
      */
     public Vector neg() {
@@ -316,6 +349,7 @@ public class Vector {
 
     /**
      * Returns a new vector with magnitude 1 which faces in the same direction.
+     *
      * @return A new normalized vector.
      */
     public Vector normalize() {
@@ -327,10 +361,12 @@ public class Vector {
     }
 
     /**
-     * Creates a new vector with every entry the same except for the entry at index, which has the value value.
+     * Creates a new vector with every entry the same except for the entry at
+     * index, which has the value value.
+     *
      * @param index The index to change.
      * @param value The value to put into index.
-     * @return A new vector with the index  at index changed to value.
+     * @return A new vector with the index at index changed to value.
      */
     public Vector replace(int index, double value) {
         if (index < 0 || index >= dim) {
@@ -342,7 +378,9 @@ public class Vector {
     }
 
     /**
-     * Creates a new vector with dimension d such that every entry is either the same as the original vector, or zero.
+     * Creates a new vector with dimension d such that every entry is either the
+     * same as the original vector, or zero.
+     *
      * @param d The dimension of the vector.
      * @return A resized vector.
      */
@@ -357,6 +395,7 @@ public class Vector {
 
     /**
      * Subtracts v from this vector.
+     *
      * @param v The other vector.
      * @return The resultant vector from the subtraction.
      */
@@ -371,8 +410,10 @@ public class Vector {
 
     /**
      * Tensor multiplies the two vectors.
+     *
      * @param v The other vector.
-     * @return The resultant vector where each index is the product of the values at the same index from the other two vectors.
+     * @return The resultant vector where each index is the product of the
+     * values at the same index from the other two vectors.
      */
     public Vector tensorMult(Vector v) {
         checkDim(v);
@@ -385,6 +426,7 @@ public class Vector {
 
     /**
      * Returns the array of doubles representing the vector.
+     *
      * @return A double array.
      */
     public double[] toDoubles() {
@@ -393,6 +435,7 @@ public class Vector {
 
     /**
      * Returns the array of floats representing the vector.
+     *
      * @return A float array.
      */
     public float[] toFloats() {
@@ -402,6 +445,7 @@ public class Vector {
         }
         return va;
     }
+
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder("<");
@@ -417,6 +461,7 @@ public class Vector {
 
     /**
      * Gets the value at index zero.
+     *
      * @return The value at index zero.
      */
     public double x() {
@@ -425,6 +470,7 @@ public class Vector {
 
     /**
      * Sets the value at index zero.
+     *
      * @param value The value to replace with.
      * @return A new vector with the zeroth index changed to value.
      */
@@ -434,6 +480,7 @@ public class Vector {
 
     /**
      * Gets the value at index one.
+     *
      * @return The value at index one.
      */
     public double y() {
@@ -442,6 +489,7 @@ public class Vector {
 
     /**
      * Sets the value at index one.
+     *
      * @param value The value to replace with.
      * @return A new vector with the first index changed to value.
      */
@@ -451,6 +499,7 @@ public class Vector {
 
     /**
      * Gets the value at index two.
+     *
      * @return The value at index two.
      */
     public double z() {
@@ -459,6 +508,7 @@ public class Vector {
 
     /**
      * Sets the value at index two.
+     *
      * @param value The value to replace with.
      * @return A new vector with the second index changed to value.
      */

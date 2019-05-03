@@ -19,51 +19,53 @@ import util.vec.Vector;
  * @author TARS
  */
 public class Input {
-    
+
     private static final BitSet buttons = new BitSet();
     private static final BitSet keys = new BitSet();
-    
+
     private static Vector mouse = Vector.zeros(2);
     private static Vector wheel = Vector.zeros(2);
-    
+
     /**
      * Gets the current state of the mouse button.
+     *
      * @param button The mouse button to query.
      * @return The state of the mouse button.
      */
     public static boolean buttonPressed(int button) {
         return buttons.get(button);
     }
-    
+
     static void initialize() {
-        
+
         Window.setCursorPosCallback((w, x, y) -> {
             Vector newMouse = new Vector(x, Window.getDimensions().y() - y);
             CLIENT_LISTENER.receiveMessage(new MousePosition(newMouse, newMouse.sub(mouse)));
             mouse = newMouse;
         });
-        
+
         Window.setKeyCallback((w, k, sc, a, m) -> {
             boolean changed = (keys.get(k) != (a != GLFW_RELEASE));
             keys.set(k, a != GLFW_RELEASE);
             CLIENT_LISTENER.receiveMessage(new KeyPress(k, a != GLFW_RELEASE, changed));
         });
-        
+
         Window.setMouseButtonCallback((w, b, a, m) -> {
             boolean changed = (buttons.get(b) != (a != GLFW_RELEASE));
             buttons.set(b, a != GLFW_RELEASE);
             CLIENT_LISTENER.receiveMessage(new MouseButton(b, a != GLFW_RELEASE, changed, mouse));
         });
-        
+
         Window.setScrollCallback((w, xo, yo) -> {
             Vector newOffset = new Vector(xo, yo);
             CLIENT_LISTENER.receiveMessage(new MouseWheel(newOffset, newOffset.sub(wheel)));
             wheel = newOffset;
         });
     }
-    
+
     /**
      * Gets the current state of the key.
+     *
      * @param key The key to query.
      * @return The state of the key.
      */
@@ -73,17 +75,19 @@ public class Input {
 
     /**
      * Gets the current position of the mouse.
+     *
      * @return The position of the mouse.
      */
     public static Vector mousePosition() {
         return mouse;
     }
-    
+
     /**
      * Gets the current wheel offset.
+     *
      * @return The offset of the mouse wheel.
      */
-    public static Vector mouseWheel(){
+    public static Vector mouseWheel() {
         return wheel;
     }
 }

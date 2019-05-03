@@ -9,8 +9,9 @@ import core.Message;
 
 /**
  * Signals that the window was directed to close.
+ *
  * @author TARS
  */
 public class WindowShouldClose implements Message {
-    
+
 }
