@@ -14,70 +14,45 @@ import static util.Utils.lastInt;
 
 /**
  * An implementation of BlockColumn using a run-length encoding method.
+ *
  * @author TARS
  */
 public class RunLengthColumn implements BlockColumn {
-
+    
+    private static int block(long enc) {
+        return lastInt(enc);
+    }
+    private static long encode(int pos, int block) {
+        return combineInts(pos, block);
+    }
+    private static int position(long enc) {
+        return firstInt(enc);
+    }
+    
+    private boolean activated;
     private long[] encodedBlocks;
     private TreeMap<Integer, Integer> intermediate;
-    public boolean activated;
-
-    private final int minHeight;
     private final int maxHeight;
+    private final int minHeight;
 
+    /**
+     * Creates a new BlockColumn with all values initialized to the block
+     * specified.
+     *
+     * @param block The block to set all the values to.
+     * @param minHeight The minimum allowed access height.
+     * @param maxHeight The maximum allowed access height.
+     */
     public RunLengthColumn(int block, int minHeight, int maxHeight) {
         encodedBlocks = new long[1];
         encodedBlocks[0] = combineInts(Integer.MAX_VALUE, block);
         intermediate = new TreeMap();
         activated = false;
+        if (minHeight > maxHeight) {
+            throw new IllegalArgumentException("Improper maxima range: min: " + minHeight + " > max: " + maxHeight);
+        }
         this.minHeight = minHeight;
         this.maxHeight = maxHeight;
-    }
-
-    private static int position(long enc) {
-        return firstInt(enc);
-    }
-
-    private static int block(long enc) {
-        return lastInt(enc);
-    }
-
-    private static long encode(int pos, int block) {
-        return combineInts(pos, block);
-    }
-
-    private int findEncodedIndex(int height) {
-        int upInd = leastUpperBinarySearchRecursion(height, 0, encodedBlocks.length);
-        assert (upInd != -1); // one of the assumptions was not kept
-        return upInd;
-    }
-
-    @Override
-    public boolean inRange(int height) {
-        return (minHeight <= height) && (height <= maxHeight);
-    }
-
-    private int leastUpperBinarySearchRecursion(int pos, int low, int high) {
-
-        assert (low != high); // since encodedBlocks should never be empty and because this is unreachable by splitting
-
-        if (high - low == 1) {
-            return position(encodedBlocks[low]) < pos ? -1 : low;
-        }
-
-        int checkInd = low + (high - low) / 2;
-        int checkPos = position(encodedBlocks[checkInd]);
-
-        if (checkPos == pos) {
-            return checkInd;
-        }
-
-        if (checkPos > pos) {
-            int downInd = leastUpperBinarySearchRecursion(pos, low, checkInd);
-            return downInd == -1 ? checkInd : downInd;
-        }
-
-        return leastUpperBinarySearchRecursion(pos, checkInd + 1, high); // there is always an upper element since Integer.MAX_VALUE always caps the array
     }
 
     @Override
@@ -89,6 +64,12 @@ public class RunLengthColumn implements BlockColumn {
 
         encodedBlocks = null;
         activated = true;
+    }
+    
+    private void checkAccessRange(int height) {
+        if (!inRange(height)) {
+            throw new IllegalArgumentException("Height must be in the acces range of the column: min = " + minHeight + " max = " + maxHeight + " input: " + height);
+        }
     }
 
     @Override
@@ -115,6 +96,12 @@ public class RunLengthColumn implements BlockColumn {
 
         intermediate = null;
         activated = false;
+    }
+    
+    private int findEncodedIndex(int height) {
+        int upInd = leastUpperBinarySearchRecursion(height, 0, encodedBlocks.length);
+        assert (upInd != -1); // one of the assumptions was not kept
+        return upInd;
     }
 
     @Override
@@ -171,6 +158,34 @@ public class RunLengthColumn implements BlockColumn {
         }
         return position(encodedBlocks[findEncodedIndex(height)]);
     }
+    
+    @Override
+    public boolean inRange(int height) {
+        return (minHeight <= height) && (height <= maxHeight);
+    }
+    
+    private int leastUpperBinarySearchRecursion(int pos, int low, int high) {
+        
+        assert (low != high); // since encodedBlocks should never be empty and because this is unreachable by splitting
+        
+        if (high - low == 1) {
+            return position(encodedBlocks[low]) < pos ? -1 : low;
+        }
+        
+        int checkInd = low + (high - low) / 2;
+        int checkPos = position(encodedBlocks[checkInd]);
+        
+        if (checkPos == pos) {
+            return checkInd;
+        }
+        
+        if (checkPos > pos) {
+            int downInd = leastUpperBinarySearchRecursion(pos, low, checkInd);
+            return downInd == -1 ? checkInd : downInd;
+        }
+        
+        return leastUpperBinarySearchRecursion(pos, checkInd + 1, high); // there is always an upper element since Integer.MAX_VALUE always caps the array
+    }
 
     @Override
     public int maxHeight() {
@@ -204,7 +219,7 @@ public class RunLengthColumn implements BlockColumn {
     public void setRange(int bottom, int top, int block) {
         checkAccessRange(bottom);
         checkAccessRange(top);
-        if(bottom > top){
+        if (bottom > top) {
             throw new IllegalArgumentException("Improper range: lower: " + bottom + " > upper: " + top);
         }
         boolean editing = activated;
@@ -220,12 +235,6 @@ public class RunLengthColumn implements BlockColumn {
 
         if (!editing) {
             deactivate();
-        }
-    }
-
-    private void checkAccessRange(int height) {
-        if (!inRange(height)) {
-            throw new IllegalArgumentException("Height must be in the acces range of the column: min = " + minHeight + " max = " + maxHeight + " input: " + height);
         }
     }
 }

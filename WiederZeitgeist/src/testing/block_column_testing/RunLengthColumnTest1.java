@@ -17,6 +17,10 @@ import util.block_columns.RunLengthColumn;
  */
 public class RunLengthColumnTest1 {
 
+    /**
+     * Initial tests of RunLengthColumn.
+     * @param args Takes no arguments.
+     */
     public static void main(String[] args) {
         BlockColumn bc = new RunLengthColumn(0, 0, 10);
         using(() -> {

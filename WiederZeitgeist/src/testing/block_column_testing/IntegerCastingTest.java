@@ -14,6 +14,11 @@ import static util.Utils.lastInt;
  * @author TARS
  */
 public class IntegerCastingTest {
+
+    /**
+     * Tests how Java specifically handles certain integer casts.
+     * @param args Takes no arguments.
+     */
     public static void main(String[] args) {
         long s = 0x4F13_F42F_F8A5_F620L;
         System.out.println(Integer.toHexString(firstInt(s)));
