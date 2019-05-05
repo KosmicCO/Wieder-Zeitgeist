@@ -24,7 +24,8 @@ public interface BlockColumn extends Activatable {
 
     /**
      * Returns the least height contiguously connected by the same block at the
-     * height given.
+     * height given. Returns Integer.MIN_VALUE if it runs to the minHeight() of
+     * the column.
      *
      * @param height The input height.
      * @return The least height as described.
@@ -33,7 +34,8 @@ public interface BlockColumn extends Activatable {
 
     /**
      * Returns the greatest height contiguously connected by the same block at
-     * the height given.
+     * the height given. Returns Integer.MAX_VALUE if it runs to the maxHeight()
+     * of the column.
      *
      * @param height The input height.
      * @return The greatest height as described.
@@ -41,14 +43,23 @@ public interface BlockColumn extends Activatable {
     public int getTopHeight(int height);
 
     /**
-     * Returns the maximum height of the column.
+     * Returns whether the height given is in the access range of the column,
+     * i.e. inclusively in between minHeight() and maxHeight().
+     *
+     * @param height The height to check.
+     * @return Whether the height was included in the range.
+     */
+    public boolean inRange(int height);
+
+    /**
+     * Returns the maximum access height of the column.
      *
      * @return The max height.
      */
     public int maxHeight();
 
     /**
-     * Returns the minimum height of the column.
+     * Returns the minimum access height of the column.
      *
      * @return The min height.
      */
