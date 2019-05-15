@@ -12,7 +12,7 @@ import util.vec.IntVector;
  * Signals within the world to unload a specific chunk.
  * @author TARS
  */
-public class UnloadChunk implements Message {
+public class UnloadChunkMessage implements Message {
     
     /**
      * The position of the chunk to unload.
@@ -23,7 +23,7 @@ public class UnloadChunk implements Message {
      * Default constructor.
      * @param c The position of the chunk to unload.
      */
-    public UnloadChunk(IntVector c){
+    public UnloadChunkMessage(IntVector c){
         chunk = c;
     }
 }

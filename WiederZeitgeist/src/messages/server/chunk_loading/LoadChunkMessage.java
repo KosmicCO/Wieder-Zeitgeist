@@ -14,7 +14,7 @@ import util.vec.IntVector;
  *
  * @author TARS
  */
-public class LoadChunk implements Message {
+public class LoadChunkMessage implements Message {
 
     /**
      * The vector representing the chunk.
@@ -32,7 +32,7 @@ public class LoadChunk implements Message {
      * @param c The chunk position to load in.
      * @param gs The step to load the chunk to.
      */
-    public LoadChunk(IntVector c, GenStep gs) {
+    public LoadChunkMessage(IntVector c, GenStep gs) {
         chunk = c;
         step = gs;
     }

@@ -16,9 +16,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import messages.client_server.*;
 import messages.server.chunk_loading.*;
 import static server.ServerListener.SERVER_LISTENER;
-import server.world.generator.GenStep;
-import static server.world.generator.GenStep.RENDER;
 import server.world.generator.WorldGenerator;
+import server.world.generator.base_gen_steps.RenderStep;
 import util.vec.IntVector;
 
 /**
@@ -29,7 +28,6 @@ import util.vec.IntVector;
 public class World {
 
     private static World currentWorld = null;
-
 
     /**
      * Makes sure that the current world saves everything and closes nicely.
@@ -63,8 +61,8 @@ public class World {
         SERVER_LISTENER.addListener(RequestRenderChunk.class, m -> {
             if (currentWorld != null) {
                 Chunk c = currentWorld.chunks.get(m.chunk);
-                if (c == null || !c.isLoaded() || !c.finishedStep(RENDER)) {
-                    currentWorld.chunkLoader.receiveMessage(new LoadChunk(m.chunk, RENDER));
+                if (c == null || !c.isLoaded() || !c.finishedStep(RenderStep.STEP)) {
+                    currentWorld.chunkLoader.receiveMessage(new LoadChunkMessage(m.chunk, RenderStep.STEP));
                     SERVER_LISTENER.receiveMessage(m);
                 } else {
                     CLIENT_LISTENER.receiveMessage(new ReturnedRenderChunk(m.chunk, null)); // construct it somehow ig
@@ -77,6 +75,7 @@ public class World {
             createNewWorld(m.generator);
         });
     }
+    
 
     private final ChunkIO chunkLoader;
     private final Map<IntVector, Chunk> chunks;
@@ -97,6 +96,19 @@ public class World {
             chunks.put(chunkPos, c);
         }
         return c;
+    }
+    
+    /**
+     * Returns the chunk at the given location. Returns null if the chunk is not loaded in.
+     * @param chunkPos The position of the chunk to get.
+     * @return The chunk at the given position.
+     */
+    public Chunk getChunk(IntVector chunkPos){
+        Chunk c = chunks.get(chunkPos);
+        if(c.isLoaded()){
+            return c;
+        }
+        return null;
     }
 
     private Collection<Chunk> unloadAllChunks() {
@@ -132,10 +144,10 @@ public class World {
         }
 
         private void handleMessage(Message m) {
-            if (LoadChunk.class.isInstance(m)) {
-                loadChunk((LoadChunk) m);
-            } else if (UnloadChunk.class.isInstance(m)) {
-                unloadChunk((UnloadChunk) m);
+            if (LoadChunkMessage.class.isInstance(m)) {
+                loadChunk((LoadChunkMessage) m);
+            } else if (UnloadChunkMessage.class.isInstance(m)) {
+                unloadChunk((UnloadChunkMessage) m);
             } else if (CleanupChunks.class.isInstance(m)) {
                 cleanupChunks();
             }
@@ -151,21 +163,24 @@ public class World {
             running = false;
         }
 
-        private void unloadChunk(UnloadChunk ulcm) {
+        private void unloadChunk(UnloadChunkMessage ulcm) {
             Chunk c = currentWorld.unloadChunk(ulcm.chunk);
             if (c != null) {
                 saveChunk(c);
             }
         }
 
-        private void loadChunk(LoadChunk lcm) {
+        private void loadChunk(LoadChunkMessage lcm) {
             Chunk c = currentWorld.forceGetChunk(lcm.chunk);
-            if (!c.finishedStep(lcm.step)) {
-                for (GenStep gs : currentWorld.generator.getDependencies(lcm.step)) {
-                    loadChunk(new LoadChunk(lcm.chunk, gs));
-                }
-                currentWorld.generator.generateStep(c, lcm.step);
-            }
+            currentWorld.generator.generateChunk(c, lcm.step);
+            currentWorld.chunks.put(lcm.chunk, c);
+//            Chunk c = currentWorld.forceGetChunk(lcm.chunk);
+//            if (!c.finishedStep(lcm.step)) {
+//                for (GenStep gs : currentWorld.generator.getDependencies(lcm.step)) {
+//                    loadChunk(new LoadChunkMessage(lcm.chunk, gs));
+//                }
+//                currentWorld.generator.generateChunk(c, lcm.step);
+//            }
         }
 
         public void join() {

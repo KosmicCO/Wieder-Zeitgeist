@@ -7,8 +7,8 @@ package server.world;
 
 import java.util.Map;
 import server.world.generator.GenStep;
-import static server.world.generator.GenStep.BLOCKS;
-import static server.world.generator.GenStep.RENDER;
+import server.world.generator.base_gen_steps.BlocksStep;
+import server.world.generator.base_gen_steps.RenderStep;
 import util.block_columns.BlockColumn;
 import util.vec.IntVector;
 
@@ -22,8 +22,6 @@ public class Chunk {
 
     private final boolean[] finishedStep;
     private boolean loaded;
-    
-
     
     /**
      * The position of the chunk in the world.
@@ -40,6 +38,7 @@ public class Chunk {
     
     private int heightGenerated = Integer.MAX_VALUE;
 
+    
     // RENDER
     
     
@@ -48,10 +47,11 @@ public class Chunk {
      * Generates a black chunk.
      *
      * @param pos The position of the chunk in the world.
+     * @param chunkSteps The number of chunk steps to keep track of.
      */
-    public Chunk(IntVector pos) {
+    public Chunk(IntVector pos, int chunkSteps) {
         position = pos;
-        finishedStep = new boolean[GenStep.values().length];
+        finishedStep = new boolean[chunkSteps];
         loaded = true;
     }
 
@@ -63,7 +63,7 @@ public class Chunk {
      */
     public boolean finishedStep(GenStep... gs) {
         for (GenStep step : gs) {
-            if (!finishedStep[step.id]) {
+            if (!finishedStep[step.id()]) {
                 return false;
             }
         }
@@ -88,7 +88,7 @@ public class Chunk {
      * @param genHeight The height which the chunk generated blocks to.
      */
     public void setBlocksStep(Map<IntVector, BlockData> wallData, Map<IntVector, BlockData> floorData, BlockColumn[] wallColumns, BlockColumn[] floorColumns, int genHeight) {
-        if (finishedStep(BLOCKS)) {
+        if (finishedStep(BlocksStep.STEP)) {
             throw new RuntimeException("Cannot initialize the BLOCKS step more than once.");
         }
         this.wallData = wallData;
@@ -96,17 +96,17 @@ public class Chunk {
         this.wallColumns = wallColumns;
         this.floorColumns = floorColumns;
         heightGenerated = genHeight;
-        finishedStep[BLOCKS.id] = true;
+        finishedStep[BlocksStep.STEP.id()] = true;
     }
     
     /**
      * For the world generator to set the data for the RENDER step.
      */
     public void setRenderStep(){
-        if (finishedStep(RENDER)) {
+        if (finishedStep(RenderStep.STEP)) {
             throw new RuntimeException("Cannot initialize the BLOCKS step more than once.");
         }
         
-        finishedStep[RENDER.id] = true;
+        finishedStep[RenderStep.STEP.id()] = true;
     }
 }

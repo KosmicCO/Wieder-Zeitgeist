@@ -8,9 +8,11 @@ package server.world.generator.generator_implementations;
 import server.world.Chunk;
 import server.world.generator.GenStep;
 import server.world.generator.WorldGenerator;
+import server.world.generator.base_gen_steps.BlocksStep;
 import util.vec.IntVector;
 
 /**
+ * A world generator which generates a world filled with one block.
  *
  * @author TARS
  */
@@ -20,6 +22,7 @@ public class AllBlock implements WorldGenerator {
 
     /**
      * Generates the world to be full of the block given.
+     *
      * @param block The block to fill the world with.
      */
     public AllBlock(int block) {
@@ -28,24 +31,23 @@ public class AllBlock implements WorldGenerator {
 
     @Override
     public Chunk createChunk(IntVector chunkPos) {
-        return new Chunk(chunkPos);
+        return new Chunk(chunkPos, 2);
     }
 
     @Override
-    public void generateStep(Chunk chunk, GenStep gs) {
-        switch (gs) {
-            case RENDER:
+    public void generateChunk(Chunk chunk, GenStep gs) {
+        if (chunk.finishedStep(gs)) {
+            return;
+        }
+        switch (gs.id()) {
+            case 0: // RenderStep
+                generateChunk(chunk, BlocksStep.STEP);
                 chunk.setRenderStep();
                 break;
-            case BLOCKS:
+            case 1: // BlocksStep
                 // generate the columns, but need to implement a block columns first.
                 chunk.setBlocksStep(null, null, null, null, 0);
                 break;
         }
-    }
-
-    @Override
-    public GenStep[] getDependencies(GenStep gs) {
-        return gs.getDependencies();
     }
 }

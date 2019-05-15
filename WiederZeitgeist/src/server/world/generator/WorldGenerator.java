@@ -30,14 +30,5 @@ public interface WorldGenerator {
      * @param chunk The chunk.
      * @param gs The step to generate.
      */
-    public void generateStep(Chunk chunk, GenStep gs);
-
-    /**
-     * Returns the dependencies defined by the GenStep method and also extra
-     * dependencies if the generator needs.
-     *
-     * @param gs The step to get the dependencies for.
-     * @return The dependencies array.
-     */
-    public GenStep[] getDependencies(GenStep gs);
+    public void generateChunk(Chunk chunk, GenStep gs);
 }
