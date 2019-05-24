@@ -11,7 +11,10 @@ import messages.client.view.WindowShouldClose;
 import messages.client_server.MakeNewWorldLocal;
 import messages.client_server.RequestRenderChunk;
 import messages.client_server.ReturnedRenderChunk;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_B;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_C;
 import static server.ServerListener.SERVER_LISTENER;
+import server.world.Block;
 import server.world.generator.generator_implementations.AllBlock;
 import start.StartProcedures;
 import util.vec.IntVector;
@@ -28,6 +31,7 @@ public class TestWorld1 {
 
     /**
      * Test the implementation of the chunk and world dynamic loading system.
+     * Also used to test the block implementation.
      *
      * @param args No arguments are taken.
      */
@@ -45,16 +49,27 @@ public class TestWorld1 {
 
         CLIENT_LISTENER.addListener(KeyPress.class, m -> {
 
-            for (int i = 0; i < 100; i++) {
-                SERVER_LISTENER.receiveMessage(new RequestRenderChunk(new IntVector(left + i, 0))); // creates more chunks to test memory usage
+            if (m.changed && m.state) {
+                switch (m.key) {
+
+                    case GLFW_KEY_C:
+
+                        for (int i = 0; i < 100; i++) {
+                            SERVER_LISTENER.receiveMessage(new RequestRenderChunk(new IntVector(left + i, 0))); // creates more chunks to test memory usage
+                        }
+
+                        left += 100;
+                        break;
+                    case GLFW_KEY_B:
+                        System.out.println(Block.getBlockFromID((short) 3).name);
+                        System.out.println(Block.getBlockFromName("Sand").id);
+                }
             }
-            
-            left += 100;
-        });
+        }
+        );
 
         StartProcedures.startListenerThreads("Test World 1", new Vector(400, 400));
         SERVER_LISTENER.receiveMessage(new MakeNewWorldLocal(new AllBlock(0)));
         SERVER_LISTENER.receiveMessage(new RequestRenderChunk(new IntVector(0, 0)));
-
     }
 }

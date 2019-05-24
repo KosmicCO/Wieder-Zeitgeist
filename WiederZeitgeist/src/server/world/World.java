@@ -6,13 +6,17 @@
 package server.world;
 
 import static client.ClientListener.CLIENT_LISTENER;
+import com.esotericsoftware.yamlbeans.YamlException;
 import core.Listener;
 import core.Message;
+import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import messages.client_server.*;
 import messages.server.chunk_loading.*;
 import static server.ServerListener.SERVER_LISTENER;
@@ -45,30 +49,37 @@ public class World {
     /**
      * Creates a new world, closing the current world if there is one, and makes
      * it the current world.
+     *
      * @param wg The world generator to use.
      */
     public static void createNewWorld(WorldGenerator wg) {
         closeCurrentWorld();
         currentWorld = new World(wg); // make sure the block of type 0 is an actual block
     }
-    
-    static void generateChunkLevel(Chunk chunk, int level){
-        if(currentWorld == null){
+
+    static void generateChunkLevel(Chunk chunk, int level) {
+        if (currentWorld == null) {
             throw new IllegalArgumentException("There is no world for the chunk to be a part of.");
         }
-        
+
         Chunk c = currentWorld.getChunk(chunk.position);
-        if(chunk != c){ // They should literally be the same object
+        if (chunk != c) { // They should literally be the same object
             throw new RuntimeException("Multiple instances of the same chunk."); // might be due to loading and unloading.
         }
         currentWorld.generator.generateToLevel(chunk, level);
     }
-    
+
     /**
      * Initializes the world.
      */
-    public static void initialize(){
-        
+    public static void initialize() {
+
+        try {
+            Block.loadIntBlocks("resources/blocks.yml");
+        } catch (FileNotFoundException | YamlException ex) {
+            throw new RuntimeException(ex);
+        }
+
         // Answers render requests and renders chunks.
         SERVER_LISTENER.addListener(RequestRenderChunk.class, m -> {
             if (currentWorld != null) {
@@ -81,13 +92,12 @@ public class World {
                 }
             }
         });
-        
+
         // Answers request to make a new world.
         SERVER_LISTENER.addListener(MakeNewWorldLocal.class, m -> {
             createNewWorld(m.generator);
         });
     }
-    
 
     private final ChunkIO chunkLoader;
     private final Map<IntVector, Chunk> chunks;
@@ -109,15 +119,17 @@ public class World {
         }
         return c;
     }
-    
+
     /**
-     * Returns the chunk at the given location. Returns null if the chunk is not loaded in.
+     * Returns the chunk at the given location. Returns null if the chunk is not
+     * loaded in.
+     *
      * @param chunkPos The position of the chunk to get.
      * @return The chunk at the given position.
      */
-    public Chunk getChunk(IntVector chunkPos){
+    public Chunk getChunk(IntVector chunkPos) {
         Chunk c = chunks.get(chunkPos);
-        if(c.isLoaded()){
+        if (c.isLoaded()) {
             return c;
         }
         return null;
