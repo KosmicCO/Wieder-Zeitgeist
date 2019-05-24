@@ -15,7 +15,14 @@ import util.vec.IntVector;
  */
 public interface WorldGenerator {
     
+    /**
+     * The maximum height of the world.
+     */
     public static final int MAX_WORLD_HEIGHT = 16384;
+
+    /**
+     * The minimum height of the world.
+     */
     public static final int MIN_WORLD_HEIGHT = -16384;
     
     /**

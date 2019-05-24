@@ -22,11 +22,22 @@ public class Block {
     private static final Map<Short, Block> ID_BLOCK_MAP = new HashMap();
     private static final Map<String, Block> NAME_BLOCK_MAP = new HashMap();
 
-
+    /**
+     * Gets the block definition associated with the given block id.
+     *
+     * @param id The block id.
+     * @return The associated block definition.
+     */
     public static Block getBlockFromID(short id) {
         return ID_BLOCK_MAP.get(id);
     }
 
+    /**
+     * Gets the block definition associated with the given name.
+     *
+     * @param name The block name.
+     * @return The associated block.
+     */
     public static Block getBlockFromName(String name) {
         return NAME_BLOCK_MAP.get(name);
     }
@@ -46,8 +57,9 @@ public class Block {
      * Loads in all of the block information from the YAML file.
      *
      * @param filePath The path to the blocks.yml file.
-     * @throws java.io.FileNotFoundException
-     * @throws com.esotericsoftware.yamlbeans.YamlException
+     * @throws java.io.FileNotFoundException Throws if the file is not found.
+     * @throws com.esotericsoftware.yamlbeans.YamlException Throws if there is
+     * an error parsing the YAML file.
      */
     public static void loadIntBlocks(String filePath) throws FileNotFoundException, YamlException {
         YamlReader blocksReader = new YamlReader(new FileReader(filePath));
@@ -67,10 +79,12 @@ public class Block {
      * The block id.
      */
     public final short id;
+
     /**
      * The name of the block
      */
     public final String name;
+
     /**
      * Creates a new block definition;
      *
@@ -81,6 +95,7 @@ public class Block {
         this.name = name;
         this.id = id;
     }
+
     /**
      * Creates a new block definition from data loaded in from blocks.yml.
      *
@@ -96,8 +111,19 @@ public class Block {
      */
     protected static class LoadedBlockData {
 
+        /**
+         * Loaded block id.
+         */
         public short id;
+
+        /**
+         * Loaded block name.
+         */
         public String name;
+
+        /**
+         * Block template to use.
+         */
         public String type;
     }
 }

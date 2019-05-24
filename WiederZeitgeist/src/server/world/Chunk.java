@@ -46,6 +46,7 @@ public class Chunk {
     public final IntVector position;
 
     // BLOCKS
+
     public Map<IntVector, BlockData> wallData = null;
     public Map<IntVector, BlockData> floorData = null;
     public BlockColumn[] wallColumns = null;
@@ -102,6 +103,14 @@ public class Chunk {
         return wall ? wallColumns[ind].getBlock(height) : floorColumns[ind].getBlock(height);
     }
     
+    /**
+     * Gets the block metadata at a given location, generating down to the location if it has not been generated yet.
+     * @param x The x coordinate.
+     * @param y The y coordinate.
+     * @param height The height of the column to access.
+     * @param wall Whether to access the metadata of a wall block or floor block.
+     * @return The metadata at the given location.
+     */
     public BlockData getBlockData(int x, int y, int height, boolean wall) {
         if (height < WorldGenerator.MIN_WORLD_HEIGHT || height > WorldGenerator.MAX_WORLD_HEIGHT) {
             throw new IllegalArgumentException("Cannot access height outside of the world boundaries.");
@@ -130,6 +139,7 @@ public class Chunk {
      * @param height The height of the column to access.
      * @param wall Whether to access a wall block or a floor block.
      * @param block The block id and meta id to set.
+     * @param metaData The metadata associated with the block. Null if none.
      */
     public void setBlock(int x, int y, int height, boolean wall, int block, BlockData metaData) {
         if (height < WorldGenerator.MIN_WORLD_HEIGHT || height > WorldGenerator.MAX_WORLD_HEIGHT) {
