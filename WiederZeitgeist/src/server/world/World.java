@@ -52,6 +52,18 @@ public class World {
         currentWorld = new World(wg); // make sure the block of type 0 is an actual block
     }
     
+    static void generateChunkLevel(Chunk chunk, int level){
+        if(currentWorld == null){
+            throw new IllegalArgumentException("There is no world for the chunk to be a part of.");
+        }
+        
+        Chunk c = currentWorld.getChunk(chunk.position);
+        if(chunk != c){ // They should literally be the same object
+            throw new RuntimeException("Multiple instances of the same chunk."); // might be due to loading and unloading.
+        }
+        currentWorld.generator.generateToLevel(chunk, level);
+    }
+    
     /**
      * Initializes the world.
      */

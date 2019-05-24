@@ -14,7 +14,10 @@ import util.vec.IntVector;
  * @author TARS
  */
 public interface WorldGenerator {
-
+    
+    public static final int MAX_WORLD_HEIGHT = 16384;
+    public static final int MIN_WORLD_HEIGHT = -16384;
+    
     /**
      * Generates a blank chunk for generating steps.
      *
@@ -31,4 +34,13 @@ public interface WorldGenerator {
      * @param gs The step to generate.
      */
     public void generateChunk(Chunk chunk, GenStep gs);
+
+    /**
+     * Generates the chunk to the level indicated if it has not been already.
+     * Generators should generated the world from top to bottom.
+     *
+     * @param chunk The chunk to generated further.
+     * @param level The level to generate to.
+     */
+    public void generateToLevel(Chunk chunk, int level);
 }

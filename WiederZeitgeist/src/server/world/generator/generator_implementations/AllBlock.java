@@ -5,10 +5,15 @@
  */
 package server.world.generator.generator_implementations;
 
+import java.util.HashMap;
 import server.world.Chunk;
+import static server.world.Chunk.WIDTH;
 import server.world.generator.GenStep;
 import server.world.generator.WorldGenerator;
 import server.world.generator.base_gen_steps.BlocksStep;
+import server.world.generator.base_gen_steps.RenderStep;
+import util.block_columns.BlockColumn;
+import util.block_columns.RunLengthColumn;
 import util.vec.IntVector;
 
 /**
@@ -42,12 +47,27 @@ public class AllBlock implements WorldGenerator {
         switch (gs.id()) {
             case 0: // RenderStep
                 generateChunk(chunk, BlocksStep.STEP);
-                chunk.setRenderStep();
+                chunk.setStepCompleted(RenderStep.STEP);
                 break;
             case 1: // BlocksStep
-                // generate the columns, but need to implement a block columns first.
-                chunk.setBlocksStep(null, null, null, null, 0);
+                chunk.floorColumns = new BlockColumn[WIDTH * WIDTH];
+                chunk.wallColumns = new BlockColumn[WIDTH * WIDTH];
+                chunk.floorData = new HashMap();
+                chunk.wallData = new HashMap();
+                for (int i = 0; i < chunk.floorColumns.length; i++) {
+                    chunk.floorColumns[i] = new RunLengthColumn(blockToFill, WorldGenerator.MIN_WORLD_HEIGHT, WorldGenerator.MAX_WORLD_HEIGHT);
+                }
+                for (int i = 0; i < chunk.wallColumns.length; i++) {
+                    chunk.wallColumns[i] = new RunLengthColumn(blockToFill, WorldGenerator.MIN_WORLD_HEIGHT, WorldGenerator.MAX_WORLD_HEIGHT);
+                }
+                chunk.heightGenerated = WorldGenerator.MIN_WORLD_HEIGHT;
+                chunk.setStepCompleted(BlocksStep.STEP);
                 break;
         }
+    }
+
+    @Override
+    public void generateToLevel(Chunk chunk, int level) {
+        // Already generated to the min world height
     }
 }
