@@ -12,7 +12,7 @@ import util.vec.IntVector;
  * A request from the client to the server for a rendered chunk.
  * @author TARS
  */
-public class RequestRenderChunk implements Message{
+public class RequestRenderChunkMessage implements Message{
     
     /**
      * The position of the chunk to get.
@@ -23,7 +23,7 @@ public class RequestRenderChunk implements Message{
      * Default constructor.
      * @param c The position of the chunk to get.
      */
-    public RequestRenderChunk(IntVector c){
+    public RequestRenderChunkMessage(IntVector c){
         chunk = c;
     }
 }
