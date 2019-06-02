@@ -50,7 +50,11 @@ public class BlockDefinition {
      * @return The block's id.
      */
     public static short getBlockID(String name) {
-        return getBlock(name).id;
+        BlockDefinition bd = getBlock(name);
+        if(bd == null){
+            throw new RuntimeException("Block not found: " + name);
+        }
+        return bd.id;
     }
 
     /**
