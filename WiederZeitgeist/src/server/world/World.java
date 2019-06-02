@@ -75,26 +75,26 @@ public class World {
     public static void initialize() {
 
         try {
-            Block.loadIntBlocks("resources/blocks.yml");
+            BlockDefinition.loadInBlocks("resources/blocks.yml");
         } catch (FileNotFoundException | YamlException ex) {
             throw new RuntimeException(ex);
         }
 
         // Answers render requests and renders chunks.
-        SERVER_LISTENER.addListener(RequestRenderChunk.class, m -> {
+        SERVER_LISTENER.addListener(RequestRenderChunkMessage.class, m -> {
             if (currentWorld != null) {
                 Chunk c = currentWorld.chunks.get(m.chunk);
                 if (c == null || !c.isLoaded() || !c.finishedStep(RenderStep.STEP)) {
                     currentWorld.chunkLoader.receiveMessage(new LoadChunkMessage(m.chunk, RenderStep.STEP));
                     SERVER_LISTENER.receiveMessage(m);
                 } else {
-                    CLIENT_LISTENER.receiveMessage(new ReturnedRenderChunk(m.chunk, null)); // construct it somehow ig
+                    CLIENT_LISTENER.receiveMessage(new ReturnedRenderChunkMessage(m.chunk, c));
                 }
             }
         });
 
         // Answers request to make a new world.
-        SERVER_LISTENER.addListener(MakeNewWorldLocal.class, m -> {
+        SERVER_LISTENER.addListener(MakeNewWorldLocalMessage.class, m -> {
             createNewWorld(m.generator);
         });
     }

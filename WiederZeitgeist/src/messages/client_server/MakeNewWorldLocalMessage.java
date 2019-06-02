@@ -14,7 +14,7 @@ import server.world.generator.WorldGenerator;
  *
  * @author TARS
  */
-public class MakeNewWorldLocal implements Message{
+public class MakeNewWorldLocalMessage implements Message{
 
     /**
      * The world generator for the world to use.
@@ -25,7 +25,7 @@ public class MakeNewWorldLocal implements Message{
      * Default constructor.
      * @param wg The world generator to use.
      */
-    public MakeNewWorldLocal(WorldGenerator wg){
+    public MakeNewWorldLocalMessage(WorldGenerator wg){
         generator = wg;
     }
 }

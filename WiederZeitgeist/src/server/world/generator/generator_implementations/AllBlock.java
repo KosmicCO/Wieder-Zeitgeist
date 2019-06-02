@@ -7,7 +7,6 @@ package server.world.generator.generator_implementations;
 
 import java.util.HashMap;
 import server.world.Chunk;
-import static server.world.Chunk.WIDTH;
 import server.world.generator.GenStep;
 import server.world.generator.WorldGenerator;
 import server.world.generator.base_gen_steps.BlocksStep;
@@ -15,6 +14,7 @@ import server.world.generator.base_gen_steps.RenderStep;
 import util.block_columns.BlockColumn;
 import util.block_columns.RunLengthColumn;
 import util.vec.IntVector;
+import static server.world.Chunk.SIZE;
 
 /**
  * A world generator which generates a world filled with one block.
@@ -50,8 +50,8 @@ public class AllBlock implements WorldGenerator {
                 chunk.setStepCompleted(RenderStep.STEP);
                 break;
             case 1: // BlocksStep
-                chunk.floorColumns = new BlockColumn[WIDTH * WIDTH];
-                chunk.wallColumns = new BlockColumn[WIDTH * WIDTH];
+                chunk.floorColumns = new BlockColumn[SIZE * SIZE];
+                chunk.wallColumns = new BlockColumn[SIZE * SIZE];
                 chunk.floorData = new HashMap();
                 chunk.wallData = new HashMap();
                 for (int i = 0; i < chunk.floorColumns.length; i++) {

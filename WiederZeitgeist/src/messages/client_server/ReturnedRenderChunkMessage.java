@@ -5,16 +5,18 @@
  */
 package messages.client_server;
 
-import client.view.RenderChunk;
+import client.gui.RenderedChunk;
 import core.Message;
 import util.vec.IntVector;
 
 /**
- * A message from the server to the client with the RenderChunk that the client had requested.
+ * A message from the server to the client with the RenderChunk that the client
+ * had requested.
+ *
  * @author TARS
  */
-public class ReturnedRenderChunk implements Message{
-    
+public class ReturnedRenderChunkMessage implements Message {
+
     /**
      * The position of the chunk.
      */
@@ -23,14 +25,15 @@ public class ReturnedRenderChunk implements Message{
     /**
      * The RenderChunk data for rendering the chunk.
      */
-    public final RenderChunk renderChunk;
-    
+    public final RenderedChunk renderChunk;
+
     /**
      * Default constructor.
+     *
      * @param cp The position of the chunk.
      * @param rc The RenderChunk data.
      */
-    public ReturnedRenderChunk(IntVector cp, RenderChunk rc){
+    public ReturnedRenderChunkMessage(IntVector cp, RenderedChunk rc) {
         position = cp;
         renderChunk = rc;
     }
