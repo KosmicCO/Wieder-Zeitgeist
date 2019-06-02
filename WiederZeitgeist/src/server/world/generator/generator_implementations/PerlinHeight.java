@@ -81,7 +81,7 @@ public class PerlinHeight implements WorldGenerator {
                 chunk.heightGenerated = WorldGenerator.MIN_WORLD_HEIGHT;
                 for (int i = 0; i < Chunk.SIZE; i++) {
                     for (int j = 0; j < Chunk.SIZE; j++) {
-                        int height = (int) (noise.fbm2d(i, j, 4, 0.01) * 50);
+                        int height = (int) (noise.fbm2d(i + chunk.position.x(), j + chunk.position.y(), 4, 0.01) * 50);
                         chunk.wallColumns[posIndex(i, j)].setRange(chunk.wallColumns[posIndex(i, j)].minHeight(), height, bottomBlock);
                         chunk.floorColumns[posIndex(i, j)].setRange(chunk.floorColumns[posIndex(i, j)].minHeight(), height + 1, bottomBlock);
                     }

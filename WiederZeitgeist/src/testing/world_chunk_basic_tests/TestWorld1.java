@@ -6,6 +6,7 @@
 package testing.world_chunk_basic_tests;
 
 import static client.ClientListener.CLIENT_LISTENER;
+import java.util.Random;
 import messages.client.view.KeyPress;
 import messages.client.view.WindowShouldClose;
 import messages.client_server.MakeNewWorldLocalMessage;
@@ -15,7 +16,8 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_B;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_C;
 import static server.ServerListener.SERVER_LISTENER;
 import server.world.BlockDefinition;
-import server.world.generator.generator_implementations.AllBlock;
+import static server.world.BlockDefinition.getBlockID;
+import server.world.generator.generator_implementations.PerlinHeight;
 import start.StartProcedures;
 import util.vec.IntVector;
 import util.vec.Vector;
@@ -69,7 +71,7 @@ public class TestWorld1 {
         );
 
         StartProcedures.startListenerThreads("Test World 1", new Vector(400, 400));
-        SERVER_LISTENER.receiveMessage(new MakeNewWorldLocalMessage(new AllBlock(0)));
+        SERVER_LISTENER.receiveMessage(new MakeNewWorldLocalMessage(new PerlinHeight(getBlockID("Sand", (short) 0), getBlockID("Air", (short) 0), new Random())));
         SERVER_LISTENER.receiveMessage(new RequestRenderChunkMessage(new IntVector(0, 0)));
     }
 }
