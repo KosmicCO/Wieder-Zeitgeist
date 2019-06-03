@@ -17,7 +17,7 @@ import server.world.generator.base_gen_steps.RenderStep;
 import util.Noise;
 import util.block_columns.BlockColumn;
 import util.block_columns.RunLengthColumn;
-import util.vec.IntVector;
+import util.math.IntVectorN;
 
 /**
  * A generator which uses perlin noise to vary the height border between two
@@ -53,7 +53,7 @@ public class PerlinHeight implements WorldGenerator {
     }
 
     @Override
-    public Chunk createChunk(IntVector chunkPos) {
+    public Chunk createChunk(IntVectorN chunkPos) {
         return new Chunk(chunkPos, 2);
     }
 

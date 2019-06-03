@@ -9,7 +9,7 @@ import static client.ClientListener.CLIENT_LISTENER;
 import client.view.Window;
 import messages.client.view.KeyPress;
 import messages.client.view.WindowShouldClose;
-import util.vec.Vector;
+import util.math.VectorN;
 
 /**
  * Testing whether the basic functions of the window and input works properly.
@@ -34,7 +34,7 @@ public class WindowTest1 {
         });
 
         CLIENT_LISTENER.start(() -> {
-            Window.initialize("Test Window 1", new Vector(400, 400));
+            Window.initialize("Test Window 1", VectorN.of(400, 400));
         }, () -> {
             Window.cleanupGLFW();
         });

@@ -15,14 +15,12 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import messages.client_server.*;
 import messages.server.chunk_loading.*;
 import static server.ServerListener.SERVER_LISTENER;
 import server.world.generator.WorldGenerator;
 import server.world.generator.base_gen_steps.RenderStep;
-import util.vec.IntVector;
+import util.math.IntVectorN;
 
 /**
  * The world. It stores the chunks and whatnot associated with the world.
@@ -100,7 +98,7 @@ public class World {
     }
 
     private final ChunkIO chunkLoader;
-    private final Map<IntVector, Chunk> chunks;
+    private final Map<IntVectorN, Chunk> chunks;
     private final WorldGenerator generator;
 
     private World(WorldGenerator wg) {
@@ -110,7 +108,7 @@ public class World {
         chunkLoader.start();
     }
 
-    private Chunk forceGetChunk(IntVector chunkPos) {
+    private Chunk forceGetChunk(IntVectorN chunkPos) {
         Chunk c = chunks.get(chunkPos);
         if (c == null) {
             // load in the chunk or generate one
@@ -127,7 +125,7 @@ public class World {
      * @param chunkPos The position of the chunk to get.
      * @return The chunk at the given position.
      */
-    public Chunk getChunk(IntVector chunkPos) {
+    public Chunk getChunk(IntVectorN chunkPos) {
         Chunk c = chunks.get(chunkPos);
         if (c.isLoaded()) {
             return c;
@@ -141,7 +139,7 @@ public class World {
         return chunksToUnload;
     }
 
-    private Chunk unloadChunk(IntVector chunkPos) {
+    private Chunk unloadChunk(IntVectorN chunkPos) {
         Chunk c = chunks.get(chunkPos);
         chunks.remove(chunkPos);
         if (c != null && c.isLoaded()) {

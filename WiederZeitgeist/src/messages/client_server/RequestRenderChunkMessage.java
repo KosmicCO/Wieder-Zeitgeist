@@ -6,24 +6,26 @@
 package messages.client_server;
 
 import core.Message;
-import util.vec.IntVector;
+import util.math.IntVectorN;
 
 /**
  * A request from the client to the server for a rendered chunk.
+ *
  * @author TARS
  */
-public class RequestRenderChunkMessage implements Message{
-    
+public class RequestRenderChunkMessage implements Message {
+
     /**
      * The position of the chunk to get.
      */
-    public final IntVector chunk;
-    
+    public final IntVectorN chunk;
+
     /**
      * Default constructor.
+     *
      * @param c The position of the chunk to get.
      */
-    public RequestRenderChunkMessage(IntVector c){
+    public RequestRenderChunkMessage(IntVectorN c) {
         chunk = c;
     }
 }

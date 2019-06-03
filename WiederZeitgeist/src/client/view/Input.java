@@ -12,7 +12,7 @@ import messages.client.view.MouseButton;
 import messages.client.view.MousePosition;
 import messages.client.view.MouseWheel;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
-import util.vec.Vector;
+import util.math.VectorN;
 
 /**
  *
@@ -23,8 +23,8 @@ public class Input {
     private static final BitSet buttons = new BitSet();
     private static final BitSet keys = new BitSet();
 
-    private static Vector mouse = Vector.zeros(2);
-    private static Vector wheel = Vector.zeros(2);
+    private static VectorN mouse = VectorN.zeros(2);
+    private static VectorN wheel = VectorN.zeros(2);
 
     /**
      * Gets the current state of the mouse button.
@@ -39,7 +39,7 @@ public class Input {
     static void initialize() {
 
         Window.setCursorPosCallback((w, x, y) -> {
-            Vector newMouse = new Vector(x, Window.getDimensions().y() - y);
+            VectorN newMouse = VectorN.of(x, Window.getDimensions().y() - y);
             CLIENT_LISTENER.receiveMessage(new MousePosition(newMouse, newMouse.sub(mouse)));
             mouse = newMouse;
         });
@@ -57,7 +57,7 @@ public class Input {
         });
 
         Window.setScrollCallback((w, xo, yo) -> {
-            Vector newOffset = new Vector(xo, yo);
+            VectorN newOffset = VectorN.of(xo, yo);
             CLIENT_LISTENER.receiveMessage(new MouseWheel(newOffset, newOffset.sub(wheel)));
             wheel = newOffset;
         });
@@ -78,7 +78,7 @@ public class Input {
      *
      * @return The position of the mouse.
      */
-    public static Vector mousePosition() {
+    public static VectorN mousePosition() {
         return mouse;
     }
 
@@ -87,7 +87,7 @@ public class Input {
      *
      * @return The offset of the mouse wheel.
      */
-    public static Vector mouseWheel() {
+    public static VectorN mouseWheel() {
         return wheel;
     }
 }

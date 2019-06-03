@@ -6,7 +6,7 @@
 package messages.client.view;
 
 import core.Message;
-import util.vec.Vector;
+import util.math.VectorN;
 
 /**
  * Transmits the state of the mouse wheel.
@@ -18,12 +18,12 @@ public class MouseWheel implements Message {
     /**
      * The current wheel offset.
      */
-    public final Vector wheelOffset;
+    public final VectorN wheelOffset;
 
     /**
      * The delta vector of the offset.
      */
-    public final Vector wheelDelta;
+    public final VectorN wheelDelta;
 
     /**
      * Default constructor.
@@ -31,7 +31,7 @@ public class MouseWheel implements Message {
      * @param wheel The current wheel offset.
      * @param delta The delta of the wheel offset.
      */
-    public MouseWheel(Vector wheel, Vector delta) {
+    public MouseWheel(VectorN wheel, VectorN delta) {
         wheelOffset = wheel;
         wheelDelta = delta;
     }

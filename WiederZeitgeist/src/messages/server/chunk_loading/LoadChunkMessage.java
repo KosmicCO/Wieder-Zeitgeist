@@ -7,7 +7,7 @@ package messages.server.chunk_loading;
 
 import core.Message;
 import server.world.generator.GenStep;
-import util.vec.IntVector;
+import util.math.IntVectorN;
 
 /**
  * Signals within world to load in a chunk to a certain step;
@@ -19,7 +19,7 @@ public class LoadChunkMessage implements Message {
     /**
      * The vector representing the chunk.
      */
-    public final IntVector chunk;
+    public final IntVectorN chunk;
 
     /**
      * The step to generate the chunk to.
@@ -32,7 +32,7 @@ public class LoadChunkMessage implements Message {
      * @param c The chunk position to load in.
      * @param gs The step to load the chunk to.
      */
-    public LoadChunkMessage(IntVector c, GenStep gs) {
+    public LoadChunkMessage(IntVectorN c, GenStep gs) {
         chunk = c;
         step = gs;
     }

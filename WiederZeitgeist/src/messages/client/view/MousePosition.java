@@ -6,7 +6,7 @@
 package messages.client.view;
 
 import core.Message;
-import util.vec.Vector;
+import util.math.VectorN;
 
 /**
  * Transmits the new mouse position and the distance traveled.
@@ -18,12 +18,12 @@ public class MousePosition implements Message {
     /**
      * New position of the mouse.
      */
-    public final Vector position;
+    public final VectorN position;
 
     /**
      * Vector representing change from the old mouse position.
      */
-    public final Vector delta;
+    public final VectorN delta;
 
     /**
      * Default constructor.
@@ -31,7 +31,7 @@ public class MousePosition implements Message {
      * @param pos The new position of the mouse.
      * @param d The delta vector from the old mouse position.
      */
-    public MousePosition(Vector pos, Vector d) {
+    public MousePosition(VectorN pos, VectorN d) {
         position = pos;
         delta = d;
     }

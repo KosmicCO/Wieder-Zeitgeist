@@ -6,22 +6,22 @@
 package client.view;
 
 import static client.ClientListener.CLIENT_LISTENER;
-import client.view.render_util.VColor;
+import graphics.Color;
 import java.io.File;
 import java.nio.IntBuffer;
 import java.util.function.Consumer;
 import messages.client.view.RenderMessage;
 import messages.client.view.WindowShouldClose;
+import org.lwjgl.glfw.*;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import static org.lwjgl.opengl.GL11.*;
 import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.system.MemoryStack;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import util.Utils;
-import util.vec.Vector;
+import util.math.VectorN;
 
 /**
  * Class for managing the window for rendering and other basic rendering
@@ -30,11 +30,11 @@ import util.vec.Vector;
  * @author TARS
  */
 public class Window {
-    
+
     private static double previousTime;
     private static Consumer<Double> render;
     private static Window window;
-    
+
     private static void checkInit() {
         if (window == null) {
             throw new RuntimeException("Window has not been initialized yet.");
@@ -57,7 +57,7 @@ public class Window {
      *
      * @return The color of the background.
      */
-    public static VColor getBackground() {
+    public static Color getBackground() {
         checkInit();
         return window.background;
     }
@@ -67,7 +67,7 @@ public class Window {
      *
      * @return The current dimensions of the window.
      */
-    public static Vector getDimensions() {
+    public static VectorN getDimensions() {
         checkInit();
         return window.dimensions;
     }
@@ -88,7 +88,7 @@ public class Window {
      * @param name The title of the window.
      * @param dim The dimensions of the window.
      */
-    public static void initialize(String name, Vector dim) {
+    public static void initialize(String name, VectorN dim) {
         System.setProperty("org.lwjgl.librarypath", new File("native").getAbsolutePath());
 
         // Setup an error callback. The default implementation
@@ -99,8 +99,8 @@ public class Window {
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
-        
-        window = new Window(name, dim, VColor.BLACK);
+
+        window = new Window(name, dim, Color.BLACK);
 
         // This line is critical for LWJGL's interoperation with GLFW's
         // OpenGL context, or any context that is managed externally.
@@ -108,13 +108,13 @@ public class Window {
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
         GL.createCapabilities();
-        
+
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         GLUtil.setupDebugMessageCallback();
-        
+
         Input.initialize();
-        
+
         CLIENT_LISTENER.addListener(RenderMessage.class, m -> {
             double newTime = Utils.getTime();
             glfwPollEvents();
@@ -127,7 +127,7 @@ public class Window {
             }
             CLIENT_LISTENER.receiveMessage(m);
         });
-        
+
         CLIENT_LISTENER.receiveMessage(new RenderMessage());
     }
 
@@ -136,11 +136,11 @@ public class Window {
      *
      * @param back The color to set as the background.
      */
-    public static void setBackground(VColor back) {
+    public static void setBackground(Color back) {
         checkInit();
         window.background = back;
     }
-    
+
     static void setCursorPosCallback(GLFWCursorPosCallbackI cursorPosCallback) {
         checkInit();
         glfwSetCursorPosCallback(window.windowID, cursorPosCallback);
@@ -151,17 +151,17 @@ public class Window {
      *
      * @param dim The dimensions to set the window to.
      */
-    public static void setDimensions(Vector dim) {
+    public static void setDimensions(VectorN dim) {
         checkInit();
         // resize?
         window.dimensions = dim;
     }
-    
+
     static void setKeyCallback(GLFWKeyCallbackI keyCallback) {
         checkInit();
         glfwSetKeyCallback(window.windowID, keyCallback);
     }
-    
+
     static void setMouseButtonCallback(GLFWMouseButtonCallbackI mouseButtonCallback) {
         checkInit();
         glfwSetMouseButtonCallback(window.windowID, mouseButtonCallback);
@@ -176,7 +176,7 @@ public class Window {
         checkInit();
         render = r;
     }
-    
+
     static void setScrollCallback(GLFWScrollCallbackI scrollCallback) {
         checkInit();
         glfwSetScrollCallback(window.windowID, scrollCallback);
@@ -192,14 +192,14 @@ public class Window {
         window.name = name;
         GLFW.glfwSetWindowTitle(window.windowID, name);
     }
-    
-    private VColor background;
-    private Vector dimensions;
+
+    private Color background;
+    private VectorN dimensions;
     private String name;
     private final long windowID;
-    
-    private Window(String name, Vector dim, VColor back) {
-        
+
+    private Window(String name, VectorN dim, Color back) {
+
         this.name = name;
         dimensions = dim;
         background = back;
@@ -245,7 +245,7 @@ public class Window {
         // Make the window visible
         glfwShowWindow(windowID);
     }
-    
+
     private void cleanup() {
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(windowID);

@@ -30,18 +30,18 @@ import static server.world.BlockDefinition.getBlockIDNoSub;
 import server.world.Chunk;
 import server.world.generator.generator_implementations.PerlinHeight;
 import start.StartProcedures;
+import util.math.IntVectorN;
 import static util.math.MathUtils.clamp;
 import static util.math.MathUtils.floor;
 import static util.math.MathUtils.mod;
 import util.math.Transformation;
 import util.math.Vec2d;
-import util.vec.IntVector;
-import util.vec.Vector;
+import util.math.VectorN;
 
 public class Main {
 
-    private static Set<IntVector> requestedChunks = new HashSet();
-    private static Map<IntVector, RenderedChunk> loadedChunks = Collections.synchronizedMap(new HashMap());
+    private static Set<IntVectorN> requestedChunks = new HashSet();
+    private static Map<IntVectorN, RenderedChunk> loadedChunks = Collections.synchronizedMap(new HashMap());
 
     public static void main(String[] args) {
         Settings.BACKGROUND_COLOR = new Color(.6, .6, .6, 1);
@@ -60,7 +60,7 @@ public class Main {
             CLIENT_LISTENER.stop();
         });
         // Starts the window, threads, etc.
-        StartProcedures.startListenerThreads("Test World 1", new Vector(400, 400));
+        StartProcedures.startListenerThreads("Test World 1", VectorN.of(400, 400));
         // Makes a new world with the generator AllBlock
         SERVER_LISTENER.receiveMessage(new MakeNewWorldLocalMessage(new PerlinHeight(
                 getBlockIDNoSub("Dirt"), getBlockIDNoSub("Air"), new Random())));
@@ -71,7 +71,7 @@ public class Main {
             for (int x = floor(Camera.camera2d.lowerLeft.x); x < Camera.camera2d.upperRight.x; x++) {
                 for (int y = floor(Camera.camera2d.lowerLeft.y); y < Camera.camera2d.upperRight.y; y++) {
                     // draw block here
-                    IntVector chunkPos = new IntVector(floor((double) x / Chunk.SIZE), floor((double) y / Chunk.SIZE));
+                    IntVectorN chunkPos = VectorN.of(x, y).div(Chunk.SIZE).floor();
                     if (!requestedChunks.contains(chunkPos)) {
                         requestedChunks.add(chunkPos);
                         SERVER_LISTENER.receiveMessage(new RequestRenderChunkMessage(chunkPos));
