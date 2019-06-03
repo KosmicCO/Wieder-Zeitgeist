@@ -6,7 +6,6 @@
 package start;
 
 import static client.ClientListener.CLIENT_LISTENER;
-import client.view.Window;
 import static java.lang.Thread.sleep;
 import static server.ServerListener.SERVER_LISTENER;
 import server.world.World;
@@ -43,12 +42,10 @@ public class StartProcedures {
         });
 
         CLIENT_LISTENER.start(() -> {
-            Window.initialize(name, dim);
             clientUp = true;
         }, () -> {
             SERVER_LISTENER.stop();
             SERVER_LISTENER.join();
-            Window.cleanupGLFW();
         });
 
         while (!(serverUp && clientUp)) {
