@@ -51,7 +51,7 @@ public class BlockDefinition {
      */
     public static short getBlockID(String name) {
         BlockDefinition bd = getBlock(name);
-        if(bd == null){
+        if (bd == null) {
             throw new RuntimeException("Block not found: " + name);
         }
         return bd.id;
@@ -66,6 +66,17 @@ public class BlockDefinition {
      */
     public static int getBlockID(String name, short subID) {
         return Utils.combineShorts(getBlockID(name), subID);
+    }
+    
+    /**
+     * Gets the id of the block with the given name, pairing it with 0 as the
+     * subID.
+     *
+     * @param name The name of the block.
+     * @return The full id of the block.
+     */
+    public static int getBlockIDNoSub(String name) {
+        return getBlockID(name, (short) 0);
     }
 
     private static void initializeBlock(BlockDefinition b) {
