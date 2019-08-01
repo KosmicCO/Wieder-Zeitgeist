@@ -7,8 +7,13 @@ package client.gui;
 
 import static client.ClientListener.CLIENT_LISTENER;
 import core.Message;
+import engine.Input;
 import java.util.Set;
 import java.util.TreeSet;
+import messages.client.view.KeyPress;
+import messages.client.view.MouseButton;
+import messages.client.view.MousePosition;
+import messages.client.view.MouseWheel;
 
 /**
  * The singleton head for passing and managing the gui structure.
@@ -27,6 +32,24 @@ public class GuiManager {
 
     private GuiManager() {
         typesToPass = new TreeSet();
+        Input.addListener((iType, mouse, deltaMouse, key, pressed, changed) -> {
+            if (currentComponent != null) {
+                switch (iType) {
+                    case Input.MOUSE_IN:
+                        currentComponent.handleMessage(new MousePosition(mouse.toVectorN(), deltaMouse.toVectorN()));
+                        break;
+                    case Input.KEY_IN:
+                        currentComponent.handleMessage(new KeyPress(key, pressed, changed));
+                        break;
+                    case Input.MOUSE_BUTTON_IN:
+                        currentComponent.handleMessage(new MouseButton(key, pressed, changed, mouse.toVectorN()));
+                        break;
+                    case Input.MOUSE_WHEEL_IN:
+                        currentComponent.handleMessage(new MouseWheel(mouse.toVectorN(), deltaMouse.toVectorN()));
+                        break;
+                }
+            }
+        });
     }
 
     /**
