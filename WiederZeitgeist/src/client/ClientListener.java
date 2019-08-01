@@ -8,10 +8,10 @@ package client;
 import core.Listener;
 import core.Message;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -20,6 +20,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Kosmic
  */
 public class ClientListener implements Listener {
+
+    private static int nextID = 0;
 
     /**
      * The threaded listener which acts as a head for all the messages going to
@@ -30,10 +32,12 @@ public class ClientListener implements Listener {
     private volatile Thread clientThread;
     private final Queue<Message> messageQueue;
     private final Map<Class<? extends Message>, List<Listener>> receivers;
+    private final Map<Integer, MessageListenerPair> receiverID;
     private boolean running;
 
     private ClientListener() {
-        receivers = new HashMap();
+        receivers = new ConcurrentHashMap();
+        receiverID = new ConcurrentHashMap();
         messageQueue = new ConcurrentLinkedQueue();
         running = false;
     }
@@ -45,8 +49,9 @@ public class ClientListener implements Listener {
      * @param <M> The message type to subscribe to.
      * @param messageType The message type to subscribe to.
      * @param listener A listener which specifically takes the message type M.
+     * @return The id of the listener, which can be used to remove it.
      */
-    public synchronized <M extends Message> void addListener(Class<M> messageType, Listener<M> listener) {
+    public synchronized <M extends Message> int addListener(Class<M> messageType, Listener<M> listener) {
         if (receivers.containsKey(messageType)) {
             if (!receivers.get(messageType).contains(listener)) {
                 receivers.get(messageType).add(listener);
@@ -56,6 +61,32 @@ public class ClientListener implements Listener {
             listenerList.add(listener);
             receivers.put(messageType, listenerList);
         }
+        int id = nextID;
+        nextID++;
+        receiverID.put(id, new MessageListenerPair(messageType, listener));
+        return id;
+    }
+
+    /**
+     * Removes the listener referred to by the id.
+     *
+     * @param id The id of the listener.
+     */
+    public synchronized void removeListener(int id) {
+        MessageListenerPair entry = receiverID.get(id);
+        if (entry == null) {
+            throw new IllegalArgumentException("Given id does not match a listener: " + id);
+        }
+
+        List<Listener> list = receivers.get(entry.mType);
+        if (list == null) {
+            throw new IllegalArgumentException("Given id does not match a listener: " + id);
+        }
+        list.remove(entry.lstn);
+        if (list.isEmpty()) {
+            receivers.remove(entry.mType);
+        }
+        receiverID.remove(id);
     }
 
     /**
@@ -114,4 +145,14 @@ public class ClientListener implements Listener {
         running = false;
     }
 
+    private static class MessageListenerPair<M extends Message> {
+
+        public Class<M> mType;
+        public Listener<M> lstn;
+
+        public MessageListenerPair(Class<M> message, Listener<M> listener) {
+            mType = message;
+            lstn = listener;
+        }
+    }
 }

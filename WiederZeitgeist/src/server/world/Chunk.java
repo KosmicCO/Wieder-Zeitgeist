@@ -5,12 +5,12 @@
  */
 package server.world;
 
+import client.gui.RenderedChunk;
 import java.util.Map;
 import server.world.generator.GenStep;
-import static server.world.generator.GenStep.BLOCKS;
-import static server.world.generator.GenStep.RENDER;
+import server.world.generator.WorldGenerator;
 import util.block_columns.BlockColumn;
-import util.vec.IntVector;
+import util.math.IntVectorN;
 
 /**
  * An object which keeps data for a specific region of space, which is usually a
@@ -18,40 +18,50 @@ import util.vec.IntVector;
  *
  * @author TARS
  */
-public class Chunk {
+public class Chunk implements RenderedChunk {
+
+    /**
+     * The power of two which is the chunk width.
+     */
+    public static final int SIZE_POW = 5;
+
+    /**
+     * The chunk width.
+     */
+    public static final int SIZE = (int) Math.pow(2, SIZE_POW);
+
+    static {
+        if (SIZE > 0x0000_4000) {
+            throw new RuntimeException("Width cannot be larger than MAX_SHORT / 2.");
+        }
+    }
 
     private final boolean[] finishedStep;
     private boolean loaded;
-    
 
-    
     /**
      * The position of the chunk in the world.
      */
-    public final IntVector position;
+    public final IntVectorN position;
 
-    
     // BLOCKS
-    
-    private Map<IntVector, BlockData> wallData = null;
-    private Map<IntVector, BlockData> floorData = null;
-    private BlockColumn[] wallColumns = null;
-    private BlockColumn[] floorColumns = null;
-    
-    private int heightGenerated = Integer.MAX_VALUE;
+    public Map<IntVectorN, BlockData> wallData = null;
+    public Map<IntVectorN, BlockData> floorData = null;
+    public BlockColumn[] wallColumns = null;
+    public BlockColumn[] floorColumns = null;
+
+    public int heightGenerated = Integer.MAX_VALUE;
 
     // RENDER
-    
-    
-    
     /**
      * Generates a black chunk.
      *
      * @param pos The position of the chunk in the world.
+     * @param chunkSteps The number of chunk steps to keep track of.
      */
-    public Chunk(IntVector pos) {
+    public Chunk(IntVectorN pos, int chunkSteps) {
         position = pos;
-        finishedStep = new boolean[GenStep.values().length];
+        finishedStep = new boolean[chunkSteps];
         loaded = true;
     }
 
@@ -63,50 +73,172 @@ public class Chunk {
      */
     public boolean finishedStep(GenStep... gs) {
         for (GenStep step : gs) {
-            if (!finishedStep[step.id]) {
+            if (!finishedStep[step.id()]) {
                 return false;
             }
         }
         return true;
     }
-    
+
+    /**
+     * Gets the block at a given location, generating down to the location if it
+     * has not been generated yet.
+     *
+     * @param x The x coordinate.
+     * @param y The y coordinate.
+     * @param height The height of the column to access.
+     * @param wall Whether to access a wall block or a floor block.
+     * @return The block id and meta id at the given location.
+     */
+    public int getBlock(int x, int y, int height, boolean wall) {
+        if (height < WorldGenerator.MIN_WORLD_HEIGHT || height > WorldGenerator.MAX_WORLD_HEIGHT) {
+            throw new IllegalArgumentException("Cannot access height outside of the world boundaries.");
+        }
+        if (height < heightGenerated) {
+            World.generateChunkLevel(this, height);
+        }
+        int ind = posIndex(x, y);
+        return wall ? wallColumns[ind].getBlock(height) : floorColumns[ind].getBlock(height);
+    }
+
+    /**
+     * Gets the block metadata at a given location, generating down to the
+     * location if it has not been generated yet.
+     *
+     * @param x The x coordinate.
+     * @param y The y coordinate.
+     * @param height The height of the column to access.
+     * @param wall Whether to access the metadata of a wall block or floor
+     * block.
+     * @return The metadata at the given location.
+     */
+    public BlockData getBlockData(int x, int y, int height, boolean wall) {
+        if (height < WorldGenerator.MIN_WORLD_HEIGHT || height > WorldGenerator.MAX_WORLD_HEIGHT) {
+            throw new IllegalArgumentException("Cannot access height outside of the world boundaries.");
+        }
+        if (height < heightGenerated) {
+            World.generateChunkLevel(this, height);
+        }
+        return wall ? wallData.get(IntVectorN.of(x, y, height)) : floorData.get(IntVectorN.of(x, y, height));
+    }
+
+    @Override
+    public int getMaxBlockHeight(int x, int y, int height, boolean wall) {
+        if (wall) {
+            return wallColumns[posIndex(x, y)].getTopHeight(height);
+        } else {
+            return floorColumns[posIndex(x, y)].getTopHeight(height);
+        }
+    }
+
+    @Override
+    public int getMaxColumnHeight(int x, int y, boolean wall) {
+        if (wall) {
+            return wallColumns[posIndex(x, y)].maxHeight();
+        } else {
+            return floorColumns[posIndex(x, y)].maxHeight();
+        }
+    }
+
+    @Override
+    public int getMinBlockHeight(int x, int y, int height, boolean wall) {
+        if (wall) {
+            return wallColumns[posIndex(x, y)].getBottomHeight(height);
+        } else {
+            return floorColumns[posIndex(x, y)].getBottomHeight(height);
+        }
+    }
+
+    @Override
+    public int getMinColumnHeight(int x, int y, boolean wall) {
+        if (wall) {
+            return wallColumns[posIndex(x, y)].minHeight();
+        } else {
+            return floorColumns[posIndex(x, y)].minHeight();
+        }
+    }
+
+    @Override
+    public Block getRenBlock(int x, int y, int height, boolean wall) {
+        return new Block(getBlock(x, y, height, wall), getBlockData(x, y, height, wall));
+    }
+
     /**
      * Returns whether the chunk is not in the process of being unloaded.
+     *
      * @return True if the chunk is not being unloaded.
      */
-    public boolean isLoaded(){
+    public boolean isLoaded() {
         return loaded;
     }
 
     /**
-     * For the world generator to set the data for the BLOCKS step.
+     * Sets the block at a given location, generating down to the location if it
+     * has not been generated yet.
      *
-     * @param wallData The extra block data map for walls.
-     * @param floorData The extra block data map for floors.
-     * @param wallColumns The wall block columns.
-     * @param floorColumns The floor block columns.
-     * @param genHeight The height which the chunk generated blocks to.
+     * @param x The x coordinate.
+     * @param y The y coordinate.
+     * @param height The height of the column to access.
+     * @param wall Whether to access a wall block or a floor block.
+     * @param block The block id and meta id to set.
+     * @param metaData The metadata associated with the block. Null if none.
      */
-    public void setBlocksStep(Map<IntVector, BlockData> wallData, Map<IntVector, BlockData> floorData, BlockColumn[] wallColumns, BlockColumn[] floorColumns, int genHeight) {
-        if (finishedStep(BLOCKS)) {
-            throw new RuntimeException("Cannot initialize the BLOCKS step more than once.");
+    public void setBlock(int x, int y, int height, boolean wall, int block, BlockData metaData) {
+        if (height < WorldGenerator.MIN_WORLD_HEIGHT || height > WorldGenerator.MAX_WORLD_HEIGHT) {
+            throw new IllegalArgumentException("Cannot access height outside of the world boundaries.");
         }
-        this.wallData = wallData;
-        this.floorData = floorData;
-        this.wallColumns = wallColumns;
-        this.floorColumns = floorColumns;
-        heightGenerated = genHeight;
-        finishedStep[BLOCKS.id] = true;
+        if (height < heightGenerated) {
+            World.generateChunkLevel(this, height);
+        }
+        int ind = posIndex(x, y);
+        if (wall) {
+            wallColumns[ind].setBlock(height, block);
+            wallData.remove(IntVectorN.of(x, y, height));
+            if (metaData != null) {
+                wallData.put(IntVectorN.of(x, y, height), metaData);
+            }
+        } else {
+            floorColumns[ind].setBlock(height, block);
+            floorData.remove(IntVectorN.of(x, y, height));
+            if (metaData != null) {
+                floorData.put(IntVectorN.of(x, y, height), metaData);
+            }
+        }
     }
-    
+
     /**
-     * For the world generator to set the data for the RENDER step.
+     * Set the chunk to be unloaded.
      */
-    public void setRenderStep(){
-        if (finishedStep(RENDER)) {
-            throw new RuntimeException("Cannot initialize the BLOCKS step more than once.");
+    public void setToUnloaded() {
+        loaded = false;
+    }
+
+    /**
+     * Called by the generator to mark that a given generation step was
+     * completed.
+     *
+     * @param gs The step in question.
+     */
+    public void setStepCompleted(GenStep gs) {
+        if (finishedStep[gs.id()]) {
+            throw new RuntimeException("Attept to mark a step completed multiple times.");
         }
-        
-        finishedStep[RENDER.id] = true;
+
+        finishedStep[gs.id()] = true;
+    }
+
+    /**
+     * Turns the given in-chunk coordinates into those used to access the array
+     * of columns.
+     *
+     * @param x The x coordinate.
+     * @param y The y coordinate.
+     * @return The integer index to the array.
+     */
+    public int posIndex(int x, int y) {
+        if (x > SIZE || y > SIZE || x < 0 || y < 0) {
+            throw new IllegalArgumentException("Position out of bounds: (" + x + ", " + y + ").");
+        }
+        return (x << SIZE_POW) | y;
     }
 }

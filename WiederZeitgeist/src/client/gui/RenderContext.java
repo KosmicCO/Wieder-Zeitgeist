@@ -13,7 +13,7 @@ package client.gui;
  * @author TARS
  */
 public interface RenderContext extends Component {
-
+    
     /**
      * Creates the necessary context for the renderer.
      */

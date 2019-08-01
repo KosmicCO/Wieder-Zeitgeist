@@ -5,43 +5,18 @@
  */
 package server.world.generator;
 
-import java.util.Arrays;
-
 /**
- * Enum keeping ids for chunk loading steps. The steps must have a unique id
- * such that their ids are sequential.
+ * Blank interface defining the steps of chunk loading.
  *
  * @author TARS
  */
-public enum GenStep {
+public interface GenStep {
 
     /**
-     * Generates the structures that store block data.
-     */
-    BLOCKS(0),
-    /**
-     * Generates everything needed to render the chunk.
-     */
-    RENDER(1, BLOCKS);
-
-    /**
-     * The id for the step. Also works as the index for an array keeping track
-     * of whether it has been generated.
-     */
-    public final int id;
-    private final GenStep[] dependencies;
-
-    private GenStep(int id, GenStep... dependents) {
-        this.id = id;
-        dependencies = dependents;
-    }
-
-    /**
-     * Gets the dependencies of the step.
+     * The id of the step. It must be the same among every object of the same
+     * class. It also must function as an index of the array.
      *
-     * @return An array of the dependencies.
+     * @return The id of the GenStep.
      */
-    public GenStep[] getDependencies() {
-        return Arrays.copyOf(dependencies, dependencies.length);
-    }
+    public int id();
 }

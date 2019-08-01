@@ -5,12 +5,19 @@
  */
 package server.world.generator.generator_implementations;
 
+import java.util.HashMap;
 import server.world.Chunk;
+import static server.world.Chunk.SIZE;
 import server.world.generator.GenStep;
 import server.world.generator.WorldGenerator;
-import util.vec.IntVector;
+import server.world.generator.base_gen_steps.BlocksStep;
+import server.world.generator.base_gen_steps.RenderStep;
+import util.block_columns.BlockColumn;
+import util.block_columns.RunLengthColumn;
+import util.math.IntVectorN;
 
 /**
+ * A world generator which generates a world filled with one block.
  *
  * @author TARS
  */
@@ -20,6 +27,7 @@ public class AllBlock implements WorldGenerator {
 
     /**
      * Generates the world to be full of the block given.
+     *
      * @param block The block to fill the world with.
      */
     public AllBlock(int block) {
@@ -27,25 +35,39 @@ public class AllBlock implements WorldGenerator {
     }
 
     @Override
-    public Chunk createChunk(IntVector chunkPos) {
-        return new Chunk(chunkPos);
+    public Chunk createChunk(IntVectorN chunkPos) {
+        return new Chunk(chunkPos, 2);
     }
 
     @Override
-    public void generateStep(Chunk chunk, GenStep gs) {
-        switch (gs) {
-            case RENDER:
-                chunk.setRenderStep();
+    public void generateChunk(Chunk chunk, GenStep gs) {
+        if (chunk.finishedStep(gs)) {
+            return;
+        }
+        switch (gs.id()) {
+            case 0: // RenderStep
+                generateChunk(chunk, BlocksStep.STEP);
+                chunk.setStepCompleted(RenderStep.STEP);
                 break;
-            case BLOCKS:
-                // generate the columns, but need to implement a block columns first.
-                chunk.setBlocksStep(null, null, null, null, 0);
+            case 1: // BlocksStep
+                chunk.floorColumns = new BlockColumn[SIZE * SIZE];
+                chunk.wallColumns = new BlockColumn[SIZE * SIZE];
+                chunk.floorData = new HashMap();
+                chunk.wallData = new HashMap();
+                for (int i = 0; i < chunk.floorColumns.length; i++) {
+                    chunk.floorColumns[i] = new RunLengthColumn(blockToFill, WorldGenerator.MIN_WORLD_HEIGHT, WorldGenerator.MAX_WORLD_HEIGHT);
+                }
+                for (int i = 0; i < chunk.wallColumns.length; i++) {
+                    chunk.wallColumns[i] = new RunLengthColumn(blockToFill, WorldGenerator.MIN_WORLD_HEIGHT, WorldGenerator.MAX_WORLD_HEIGHT);
+                }
+                chunk.heightGenerated = WorldGenerator.MIN_WORLD_HEIGHT;
+                chunk.setStepCompleted(BlocksStep.STEP);
                 break;
         }
     }
 
     @Override
-    public GenStep[] getDependencies(GenStep gs) {
-        return gs.getDependencies();
+    public void generateToLevel(Chunk chunk, int level) {
+        // Already generated to the min world height
     }
 }

@@ -6,8 +6,10 @@
 package server.world;
 
 import static client.ClientListener.CLIENT_LISTENER;
+import com.esotericsoftware.yamlbeans.YamlException;
 import core.Listener;
 import core.Message;
+import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Queue;
@@ -16,10 +18,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import messages.client_server.*;
 import messages.server.chunk_loading.*;
 import static server.ServerListener.SERVER_LISTENER;
-import server.world.generator.GenStep;
-import static server.world.generator.GenStep.RENDER;
 import server.world.generator.WorldGenerator;
-import util.vec.IntVector;
+import server.world.generator.base_gen_steps.RenderStep;
+import util.math.IntVectorN;
 
 /**
  * The world. It stores the chunks and whatnot associated with the world.
@@ -29,7 +30,6 @@ import util.vec.IntVector;
 public class World {
 
     private static World currentWorld = null;
-
 
     /**
      * Makes sure that the current world saves everything and closes nicely.
@@ -47,39 +47,58 @@ public class World {
     /**
      * Creates a new world, closing the current world if there is one, and makes
      * it the current world.
+     *
      * @param wg The world generator to use.
      */
     public static void createNewWorld(WorldGenerator wg) {
         closeCurrentWorld();
         currentWorld = new World(wg); // make sure the block of type 0 is an actual block
     }
-    
+
+    static void generateChunkLevel(Chunk chunk, int level) {
+        if (currentWorld == null) {
+            throw new IllegalArgumentException("There is no world for the chunk to be a part of.");
+        }
+
+        Chunk c = currentWorld.getChunk(chunk.position);
+        if (chunk != c) { // They should literally be the same object
+            throw new RuntimeException("Multiple instances of the same chunk."); // might be due to loading and unloading.
+        }
+        currentWorld.generator.generateToLevel(chunk, level);
+    }
+
     /**
      * Initializes the world.
      */
-    public static void initialize(){
-        
+    public static void initialize() {
+
+        try {
+            BlockDefinition.loadInBlocks("resources/blocks.yml");
+        } catch (FileNotFoundException | YamlException ex) {
+            throw new RuntimeException(ex);
+        }
+
         // Answers render requests and renders chunks.
-        SERVER_LISTENER.addListener(RequestRenderChunk.class, m -> {
+        SERVER_LISTENER.addListener(RequestRenderChunkMessage.class, m -> {
             if (currentWorld != null) {
                 Chunk c = currentWorld.chunks.get(m.chunk);
-                if (c == null || !c.isLoaded() || !c.finishedStep(RENDER)) {
-                    currentWorld.chunkLoader.receiveMessage(new LoadChunk(m.chunk, RENDER));
+                if (c == null || !c.isLoaded() || !c.finishedStep(RenderStep.STEP)) {
+                    currentWorld.chunkLoader.receiveMessage(new LoadChunkMessage(m.chunk, RenderStep.STEP));
                     SERVER_LISTENER.receiveMessage(m);
                 } else {
-                    CLIENT_LISTENER.receiveMessage(new ReturnedRenderChunk(m.chunk, null)); // construct it somehow ig
+                    CLIENT_LISTENER.receiveMessage(new ReturnedRenderChunkMessage(m.chunk, c));
                 }
             }
         });
-        
+
         // Answers request to make a new world.
-        SERVER_LISTENER.addListener(MakeNewWorldLocal.class, m -> {
+        SERVER_LISTENER.addListener(MakeNewWorldLocalMessage.class, m -> {
             createNewWorld(m.generator);
         });
     }
 
     private final ChunkIO chunkLoader;
-    private final Map<IntVector, Chunk> chunks;
+    private final Map<IntVectorN, Chunk> chunks;
     private final WorldGenerator generator;
 
     private World(WorldGenerator wg) {
@@ -89,7 +108,7 @@ public class World {
         chunkLoader.start();
     }
 
-    private Chunk forceGetChunk(IntVector chunkPos) {
+    private Chunk forceGetChunk(IntVectorN chunkPos) {
         Chunk c = chunks.get(chunkPos);
         if (c == null) {
             // load in the chunk or generate one
@@ -99,13 +118,28 @@ public class World {
         return c;
     }
 
+    /**
+     * Returns the chunk at the given location. Returns null if the chunk is not
+     * loaded in.
+     *
+     * @param chunkPos The position of the chunk to get.
+     * @return The chunk at the given position.
+     */
+    public Chunk getChunk(IntVectorN chunkPos) {
+        Chunk c = chunks.get(chunkPos);
+        if (c.isLoaded()) {
+            return c;
+        }
+        return null;
+    }
+
     private Collection<Chunk> unloadAllChunks() {
         Collection<Chunk> chunksToUnload = chunks.values();
         chunks.clear();
         return chunksToUnload;
     }
 
-    private Chunk unloadChunk(IntVector chunkPos) {
+    private Chunk unloadChunk(IntVectorN chunkPos) {
         Chunk c = chunks.get(chunkPos);
         chunks.remove(chunkPos);
         if (c != null && c.isLoaded()) {
@@ -132,10 +166,10 @@ public class World {
         }
 
         private void handleMessage(Message m) {
-            if (LoadChunk.class.isInstance(m)) {
-                loadChunk((LoadChunk) m);
-            } else if (UnloadChunk.class.isInstance(m)) {
-                unloadChunk((UnloadChunk) m);
+            if (LoadChunkMessage.class.isInstance(m)) {
+                loadChunk((LoadChunkMessage) m);
+            } else if (UnloadChunkMessage.class.isInstance(m)) {
+                unloadChunk((UnloadChunkMessage) m);
             } else if (CleanupChunks.class.isInstance(m)) {
                 cleanupChunks();
             }
@@ -151,21 +185,24 @@ public class World {
             running = false;
         }
 
-        private void unloadChunk(UnloadChunk ulcm) {
+        private void unloadChunk(UnloadChunkMessage ulcm) {
             Chunk c = currentWorld.unloadChunk(ulcm.chunk);
             if (c != null) {
                 saveChunk(c);
             }
         }
 
-        private void loadChunk(LoadChunk lcm) {
+        private void loadChunk(LoadChunkMessage lcm) {
             Chunk c = currentWorld.forceGetChunk(lcm.chunk);
-            if (!c.finishedStep(lcm.step)) {
-                for (GenStep gs : currentWorld.generator.getDependencies(lcm.step)) {
-                    loadChunk(new LoadChunk(lcm.chunk, gs));
-                }
-                currentWorld.generator.generateStep(c, lcm.step);
-            }
+            currentWorld.generator.generateChunk(c, lcm.step);
+            currentWorld.chunks.put(lcm.chunk, c);
+//            Chunk c = currentWorld.forceGetChunk(lcm.chunk);
+//            if (!c.finishedStep(lcm.step)) {
+//                for (GenStep gs : currentWorld.generator.getDependencies(lcm.step)) {
+//                    loadChunk(new LoadChunkMessage(lcm.chunk, gs));
+//                }
+//                currentWorld.generator.generateChunk(c, lcm.step);
+//            }
         }
 
         public void join() {

@@ -6,7 +6,7 @@
 package messages.client.view;
 
 import core.Message;
-import util.vec.Vector;
+import util.math.VectorN;
 
 /**
  * Transmits the state of the mouse buttons.
@@ -33,7 +33,7 @@ public class MouseButton implements Message {
     /**
      * The mouse position at the time of the click;
      */
-    public final Vector mousePos;
+    public final VectorN mousePos;
 
     /**
      * Default constructor.
@@ -43,7 +43,7 @@ public class MouseButton implements Message {
      * @param c Whether the state just changed.
      * @param mouse The mouse position at the time of the button press.
      */
-    public MouseButton(int b, boolean s, boolean c, Vector mouse) {
+    public MouseButton(int b, boolean s, boolean c, VectorN mouse) {
         button = b;
         state = s;
         changed = c;

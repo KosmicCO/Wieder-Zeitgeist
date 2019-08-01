@@ -6,7 +6,7 @@
 package server.world.generator;
 
 import server.world.Chunk;
-import util.vec.IntVector;
+import util.math.IntVectorN;
 
 /**
  * Interface for a world generator.
@@ -16,12 +16,22 @@ import util.vec.IntVector;
 public interface WorldGenerator {
 
     /**
+     * The maximum height of the world.
+     */
+    public static final int MAX_WORLD_HEIGHT = 16384;
+
+    /**
+     * The minimum height of the world.
+     */
+    public static final int MIN_WORLD_HEIGHT = -16384;
+
+    /**
      * Generates a blank chunk for generating steps.
      *
      * @param chunkPos The chunk position.
      * @return A new chunk.
      */
-    public Chunk createChunk(IntVector chunkPos);
+    public Chunk createChunk(IntVectorN chunkPos);
 
     /**
      * Generates the chunk step for a given chunk. Throws a RuntimeException if
@@ -30,14 +40,14 @@ public interface WorldGenerator {
      * @param chunk The chunk.
      * @param gs The step to generate.
      */
-    public void generateStep(Chunk chunk, GenStep gs);
+    public void generateChunk(Chunk chunk, GenStep gs);
 
     /**
-     * Returns the dependencies defined by the GenStep method and also extra
-     * dependencies if the generator needs.
+     * Generates the chunk to the level indicated if it has not been already.
+     * Generators should generated the world from top to bottom.
      *
-     * @param gs The step to get the dependencies for.
-     * @return The dependencies array.
+     * @param chunk The chunk to generated further.
+     * @param level The level to generate to.
      */
-    public GenStep[] getDependencies(GenStep gs);
+    public void generateToLevel(Chunk chunk, int level);
 }

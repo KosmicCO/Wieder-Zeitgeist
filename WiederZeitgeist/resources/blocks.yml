@@ -1,0 +1,19 @@
+type: Generic
+name: Air
+id: 0
+---
+type: Generic
+name: Stone
+id: 1
+---
+type: Generic
+name: Dirt
+id: 2
+---
+type: Generic
+name: Grass
+id: 3
+---
+type: Generic
+name: Sand
+id: 4

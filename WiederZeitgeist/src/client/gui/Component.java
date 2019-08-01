@@ -6,7 +6,7 @@
 package client.gui;
 
 import core.Message;
-import util.vec.Vector;
+import util.math.VectorN;
 
 /**
  * An interface for a renderable component which reacts to user input.
@@ -18,10 +18,10 @@ public interface Component {
     /**
      * Determines whether v is contained by the component.
      *
-     * @param v The vector to check.
+     * @param v The vector to check.I
      * @return Whether the vector v is contained by this.
      */
-    public boolean contains(Vector v);
+    public boolean contains(VectorN v);
 
     /**
      * Gets a message to handle.
