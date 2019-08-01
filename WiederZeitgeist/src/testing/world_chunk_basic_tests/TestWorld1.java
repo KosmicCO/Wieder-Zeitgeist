@@ -19,8 +19,8 @@ import server.world.BlockDefinition;
 import static server.world.BlockDefinition.getBlockID;
 import server.world.generator.generator_implementations.PerlinHeight;
 import start.StartProcedures;
-import util.vec.IntVector;
-import util.vec.Vector;
+import util.math.IntVectorN;
+import util.math.VectorN;
 
 /**
  * Tests the basic functionality of the world and chunk interactions.
@@ -41,7 +41,7 @@ public class TestWorld1 {
 
         left = 1;
 
-        CLIENT_LISTENER.addListener(ReturnedRenderChunkMessage.class, m -> {
+        int id1 = CLIENT_LISTENER.addListener(ReturnedRenderChunkMessage.class, m -> {
             System.out.println(m.position);
         });
 
@@ -49,7 +49,7 @@ public class TestWorld1 {
             CLIENT_LISTENER.stop();
         });
 
-        CLIENT_LISTENER.addListener(KeyPress.class, m -> {
+        int id2 = CLIENT_LISTENER.addListener(KeyPress.class, m -> {
 
             if (m.changed && m.state) {
                 switch (m.key) {
@@ -57,7 +57,7 @@ public class TestWorld1 {
                     case GLFW_KEY_C:
 
                         for (int i = 0; i < 100; i++) {
-                            SERVER_LISTENER.receiveMessage(new RequestRenderChunkMessage(new IntVector(left + i, 0))); // creates more chunks to test memory usage
+                            SERVER_LISTENER.receiveMessage(new RequestRenderChunkMessage(IntVectorN.of(left + i, 0))); // creates more chunks to test memory usage
                         }
 
                         left += 100;
@@ -69,9 +69,11 @@ public class TestWorld1 {
             }
         }
         );
+        
+        CLIENT_LISTENER.removeListener(id2);
 
-        StartProcedures.startListenerThreads("Test World 1", new Vector(400, 400));
+        StartProcedures.startListenerThreads("Test World 1");
         SERVER_LISTENER.receiveMessage(new MakeNewWorldLocalMessage(new PerlinHeight(getBlockID("Sand", (short) 0), getBlockID("Air", (short) 0), new Random())));
-        SERVER_LISTENER.receiveMessage(new RequestRenderChunkMessage(new IntVector(0, 0)));
+        SERVER_LISTENER.receiveMessage(new RequestRenderChunkMessage(IntVectorN.of(0, 0)));
     }
 }

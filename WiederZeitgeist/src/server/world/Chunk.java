@@ -10,7 +10,7 @@ import java.util.Map;
 import server.world.generator.GenStep;
 import server.world.generator.WorldGenerator;
 import util.block_columns.BlockColumn;
-import util.vec.IntVector;
+import util.math.IntVectorN;
 
 /**
  * An object which keeps data for a specific region of space, which is usually a
@@ -42,11 +42,11 @@ public class Chunk implements RenderedChunk {
     /**
      * The position of the chunk in the world.
      */
-    public final IntVector position;
+    public final IntVectorN position;
 
     // BLOCKS
-    public Map<IntVector, BlockData> wallData = null;
-    public Map<IntVector, BlockData> floorData = null;
+    public Map<IntVectorN, BlockData> wallData = null;
+    public Map<IntVectorN, BlockData> floorData = null;
     public BlockColumn[] wallColumns = null;
     public BlockColumn[] floorColumns = null;
 
@@ -59,7 +59,7 @@ public class Chunk implements RenderedChunk {
      * @param pos The position of the chunk in the world.
      * @param chunkSteps The number of chunk steps to keep track of.
      */
-    public Chunk(IntVector pos, int chunkSteps) {
+    public Chunk(IntVectorN pos, int chunkSteps) {
         position = pos;
         finishedStep = new boolean[chunkSteps];
         loaded = true;
@@ -119,7 +119,7 @@ public class Chunk implements RenderedChunk {
         if (height < heightGenerated) {
             World.generateChunkLevel(this, height);
         }
-        return wall ? wallData.get(new IntVector(x, y, height)) : floorData.get(new IntVector(x, y, height));
+        return wall ? wallData.get(IntVectorN.of(x, y, height)) : floorData.get(IntVectorN.of(x, y, height));
     }
 
     @Override
@@ -193,15 +193,15 @@ public class Chunk implements RenderedChunk {
         int ind = posIndex(x, y);
         if (wall) {
             wallColumns[ind].setBlock(height, block);
-            wallData.remove(new IntVector(x, y, height));
+            wallData.remove(IntVectorN.of(x, y, height));
             if (metaData != null) {
-                wallData.put(new IntVector(x, y, height), metaData);
+                wallData.put(IntVectorN.of(x, y, height), metaData);
             }
         } else {
             floorColumns[ind].setBlock(height, block);
-            floorData.remove(new IntVector(x, y, height));
+            floorData.remove(IntVectorN.of(x, y, height));
             if (metaData != null) {
-                floorData.put(new IntVector(x, y, height), metaData);
+                floorData.put(IntVectorN.of(x, y, height), metaData);
             }
         }
     }

@@ -7,7 +7,7 @@ package messages.client_server;
 
 import client.gui.RenderedChunk;
 import core.Message;
-import util.vec.IntVector;
+import util.math.IntVectorN;
 
 /**
  * A message from the server to the client with the RenderChunk that the client
@@ -20,7 +20,7 @@ public class ReturnedRenderChunkMessage implements Message {
     /**
      * The position of the chunk.
      */
-    public final IntVector position;
+    public final IntVectorN position;
 
     /**
      * The RenderChunk data for rendering the chunk.
@@ -33,7 +33,7 @@ public class ReturnedRenderChunkMessage implements Message {
      * @param cp The position of the chunk.
      * @param rc The RenderChunk data.
      */
-    public ReturnedRenderChunkMessage(IntVector cp, RenderedChunk rc) {
+    public ReturnedRenderChunkMessage(IntVectorN cp, RenderedChunk rc) {
         position = cp;
         renderChunk = rc;
     }

@@ -8,7 +8,7 @@ package client.gui;
 import core.Message;
 import java.util.ArrayList;
 import java.util.List;
-import util.vec.Vector;
+import util.math.VectorN;
 
 /**
  * A component which holds other components in an order.
@@ -36,7 +36,7 @@ public class Container implements Component {
     }
 
     @Override
-    public boolean contains(Vector v) {
+    public boolean contains(VectorN v) {
         return components.stream().anyMatch(c -> c.contains(v));
     }
 

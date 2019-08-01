@@ -6,24 +6,26 @@
 package messages.server.chunk_loading;
 
 import core.Message;
-import util.vec.IntVector;
+import util.math.IntVectorN;
 
 /**
  * Signals within the world to unload a specific chunk.
+ *
  * @author TARS
  */
 public class UnloadChunkMessage implements Message {
-    
+
     /**
      * The position of the chunk to unload.
      */
-    public final IntVector chunk;
-    
+    public final IntVectorN chunk;
+
     /**
      * Default constructor.
+     *
      * @param c The position of the chunk to unload.
      */
-    public UnloadChunkMessage(IntVector c){
+    public UnloadChunkMessage(IntVectorN c) {
         chunk = c;
     }
 }

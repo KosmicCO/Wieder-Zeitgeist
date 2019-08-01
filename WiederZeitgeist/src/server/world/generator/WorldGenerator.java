@@ -6,7 +6,7 @@
 package server.world.generator;
 
 import server.world.Chunk;
-import util.vec.IntVector;
+import util.math.IntVectorN;
 
 /**
  * Interface for a world generator.
@@ -14,7 +14,7 @@ import util.vec.IntVector;
  * @author TARS
  */
 public interface WorldGenerator {
-    
+
     /**
      * The maximum height of the world.
      */
@@ -24,14 +24,14 @@ public interface WorldGenerator {
      * The minimum height of the world.
      */
     public static final int MIN_WORLD_HEIGHT = -16384;
-    
+
     /**
      * Generates a blank chunk for generating steps.
      *
      * @param chunkPos The chunk position.
      * @return A new chunk.
      */
-    public Chunk createChunk(IntVector chunkPos);
+    public Chunk createChunk(IntVectorN chunkPos);
 
     /**
      * Generates the chunk step for a given chunk. Throws a RuntimeException if

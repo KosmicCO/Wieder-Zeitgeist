@@ -8,13 +8,11 @@ package server;
 import core.Listener;
 import core.Message;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The main threaded singleton listener for the server section of the game.
@@ -28,14 +26,16 @@ public class ServerListener implements Listener {
      * the client section from elsewhere.
      */
     public static final ServerListener SERVER_LISTENER = new ServerListener();
-
-    private volatile Thread serverThread;
+    private static int nextID = 0;
     private final Queue<Message> messageQueue;
+    private final Map<Integer, MessageListenerPair> receiverID;
     private final Map<Class<? extends Message>, List<Listener>> receivers;
     private boolean running;
+    private volatile Thread serverThread;
 
     private ServerListener() {
-        receivers = new HashMap();
+        receivers = new ConcurrentHashMap();
+        receiverID = new ConcurrentHashMap();
         messageQueue = new ConcurrentLinkedQueue();
         running = false;
     }
@@ -47,8 +47,9 @@ public class ServerListener implements Listener {
      * @param <M> The message type to subscribe to.
      * @param messageType The message type to subscribe to.
      * @param listener A listener which specifically takes the message type M.
+     * @return The id of the listener, which can be used to remove it.
      */
-    public synchronized <M extends Message> void addListener(Class<M> messageType, Listener<M> listener) {
+    public synchronized <M extends Message> int addListener(Class<M> messageType, Listener<M> listener) {
         if (receivers.containsKey(messageType)) {
             if (!receivers.get(messageType).contains(listener)) {
                 receivers.get(messageType).add(listener);
@@ -58,6 +59,10 @@ public class ServerListener implements Listener {
             listenerList.add(listener);
             receivers.put(messageType, listenerList);
         }
+        int id = nextID;
+        nextID++;
+        receiverID.put(id, new MessageListenerPair(messageType, listener));
+        return id;
     }
 
     /**
@@ -80,6 +85,28 @@ public class ServerListener implements Listener {
             receivers.put(message.getClass(), new ArrayList());
         }
         messageQueue.add(message);
+    }
+
+    /**
+     * Removes the listener referred to by the id.
+     *
+     * @param id The id of the listener.
+     */
+    public synchronized void removeListener(int id) {
+        MessageListenerPair entry = receiverID.get(id);
+        if (entry == null) {
+            throw new IllegalArgumentException("Given id does not match a listener: " + id);
+        }
+
+        List<Listener> list = receivers.get(entry.mType);
+        if (list == null) {
+            throw new IllegalArgumentException("Given id does not match a listener: " + id);
+        }
+        list.remove(entry.lstn);
+        if (list.isEmpty()) {
+            receivers.remove(entry.mType);
+        }
+        receiverID.remove(id);
     }
 
     /**
@@ -116,4 +143,14 @@ public class ServerListener implements Listener {
         running = false;
     }
 
+    private static class MessageListenerPair<M extends Message> {
+
+        public Class<M> mType;
+        public Listener<M> lstn;
+
+        public MessageListenerPair(Class<M> message, Listener<M> listener) {
+            mType = message;
+            lstn = listener;
+        }
+    }
 }

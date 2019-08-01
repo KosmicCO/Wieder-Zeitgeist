@@ -7,14 +7,14 @@ package server.world.generator.generator_implementations;
 
 import java.util.HashMap;
 import server.world.Chunk;
+import static server.world.Chunk.SIZE;
 import server.world.generator.GenStep;
 import server.world.generator.WorldGenerator;
 import server.world.generator.base_gen_steps.BlocksStep;
 import server.world.generator.base_gen_steps.RenderStep;
 import util.block_columns.BlockColumn;
 import util.block_columns.RunLengthColumn;
-import util.vec.IntVector;
-import static server.world.Chunk.SIZE;
+import util.math.IntVectorN;
 
 /**
  * A world generator which generates a world filled with one block.
@@ -35,7 +35,7 @@ public class AllBlock implements WorldGenerator {
     }
 
     @Override
-    public Chunk createChunk(IntVector chunkPos) {
+    public Chunk createChunk(IntVectorN chunkPos) {
         return new Chunk(chunkPos, 2);
     }
 

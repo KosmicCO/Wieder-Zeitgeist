@@ -13,7 +13,7 @@ import server.world.Block;
  * @author TARS
  */
 public interface RenderedChunk {
-
+    
     /**
      * Returns the maximum height contiguously connected by the same block.
      *

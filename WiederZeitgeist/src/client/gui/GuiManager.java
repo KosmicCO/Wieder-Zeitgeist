@@ -22,7 +22,7 @@ public class GuiManager {
      */
     public static final GuiManager GUI_MANAGER = new GuiManager();
 
-    private Component currentComponent = null;
+    private RenderContext currentComponent = null;
     private final Set<Class<? extends Message>> typesToPass;
 
     private GuiManager() {
@@ -34,7 +34,7 @@ public class GuiManager {
      *
      * @return The current component.
      */
-    public Component getCurrentComponent() {
+    public RenderContext getCurrentComponent() {
         return currentComponent;
     }
 
@@ -69,7 +69,7 @@ public class GuiManager {
      *
      * @param comp the component to set as the current.
      */
-    public void setCurrentComponent(Component comp) {
+    public void setCurrentComponent(RenderContext comp) {
         currentComponent = comp;
     }
 }
