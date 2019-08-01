@@ -9,7 +9,6 @@ import static client.ClientListener.CLIENT_LISTENER;
 import static java.lang.Thread.sleep;
 import static server.ServerListener.SERVER_LISTENER;
 import server.world.World;
-import util.math.VectorN;
 
 /**
  * A class designed for starting up certain systems of the game.
@@ -26,9 +25,8 @@ public class StartProcedures {
      * safely.
      *
      * @param name The name of the window.
-     * @param dim The dimensions of the window.
      */
-    public static void startListenerThreads(String name, VectorN dim) {
+    public static void startListenerThreads(String name) {
 
         serverUp = false;
         clientUp = false;

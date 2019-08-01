@@ -41,7 +41,7 @@ public class TestWorld1 {
 
         left = 1;
 
-        CLIENT_LISTENER.addListener(ReturnedRenderChunkMessage.class, m -> {
+        int id1 = CLIENT_LISTENER.addListener(ReturnedRenderChunkMessage.class, m -> {
             System.out.println(m.position);
         });
 
@@ -49,7 +49,7 @@ public class TestWorld1 {
             CLIENT_LISTENER.stop();
         });
 
-        CLIENT_LISTENER.addListener(KeyPress.class, m -> {
+        int id2 = CLIENT_LISTENER.addListener(KeyPress.class, m -> {
 
             if (m.changed && m.state) {
                 switch (m.key) {
@@ -69,8 +69,10 @@ public class TestWorld1 {
             }
         }
         );
+        
+        CLIENT_LISTENER.removeListener(id2);
 
-        StartProcedures.startListenerThreads("Test World 1", VectorN.of(400, 400));
+        StartProcedures.startListenerThreads("Test World 1");
         SERVER_LISTENER.receiveMessage(new MakeNewWorldLocalMessage(new PerlinHeight(getBlockID("Sand", (short) 0), getBlockID("Air", (short) 0), new Random())));
         SERVER_LISTENER.receiveMessage(new RequestRenderChunkMessage(IntVectorN.of(0, 0)));
     }
