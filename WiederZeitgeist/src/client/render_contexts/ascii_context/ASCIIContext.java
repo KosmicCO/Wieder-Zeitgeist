@@ -6,7 +6,6 @@
 package client.render_contexts.ascii_context;
 
 import static client.ClientListener.CLIENT_LISTENER;
-import client.gui.GuiManager;
 import client.gui.RenderContext;
 import client.gui.RenderedChunk;
 import static client.render_contexts.SpriteContext.viewHeight;
@@ -21,9 +20,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import messages.client.view.KeyPress;
 import messages.client.view.WindowShouldClose;
 import messages.client_server.RequestRenderChunkMessage;
 import messages.client_server.ReturnedRenderChunkMessage;
+import org.lwjgl.glfw.GLFW;
 import static server.ServerListener.SERVER_LISTENER;
 import static server.world.BlockDefinition.getBlockID;
 import server.world.Chunk;
@@ -80,6 +81,22 @@ public class ASCIIContext implements RenderContext {
 
     @Override
     public boolean handleMessage(Message message) {
+        Message.onMessageType(message, KeyPress.class, kp -> {
+            switch(kp.key){
+                case GLFW.GLFW_KEY_W:
+                    Main.position = Main.position.add(new Vec3d(0, 1, 0));
+                    break;
+                case GLFW.GLFW_KEY_S:
+                    Main.position = Main.position.add(new Vec3d(0, -1, 0));
+                    break;
+                case GLFW.GLFW_KEY_A:
+                    Main.position = Main.position.add(new Vec3d(-1, 0, 0));
+                    break;
+                case GLFW.GLFW_KEY_D:
+                    Main.position = Main.position.add(new Vec3d(1, 0, 0));
+                    break;
+            }
+        });
         return true;
     }
 
