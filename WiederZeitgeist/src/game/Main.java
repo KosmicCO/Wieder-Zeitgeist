@@ -16,6 +16,7 @@ import static server.ServerListener.SERVER_LISTENER;
 import static server.world.BlockDefinition.getBlockIDNoSub;
 import server.world.generator.generator_implementations.PerlinHeight;
 import start.StartProcedures;
+import util.fontString.IDStringEncoder;
 import util.math.Vec3d;
 
 public class Main {
@@ -28,12 +29,13 @@ public class Main {
         Settings.BACKGROUND_COLOR = new Color(.6, .6, .6, 1);
         Settings.ENABLE_VSYNC = false;
         
+        IDStringEncoder.initialize();
+        
         Core.init();
         RenderContext context = useSpriteContext ? SPRITE_CONTEXT :  ASCII_CONTEXT;
         context.create();
         GuiManager.GUI_MANAGER.setCurrentComponent(context);
         new FPSBehavior().create();
-        new QuitOnEscapeBehavior().create();
         
         RENDER2D.onStep(() -> {
             GuiManager.GUI_MANAGER.render();
