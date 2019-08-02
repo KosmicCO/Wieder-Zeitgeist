@@ -6,6 +6,7 @@
 package start;
 
 import static client.ClientListener.CLIENT_LISTENER;
+import engine.Core;
 import static java.lang.Thread.sleep;
 import static server.ServerListener.SERVER_LISTENER;
 import server.world.World;
@@ -37,6 +38,7 @@ public class StartProcedures {
         }, () -> {
             World.closeCurrentWorld();
             CLIENT_LISTENER.stop();
+            Core.stopGame();
         });
 
         CLIENT_LISTENER.start(() -> {

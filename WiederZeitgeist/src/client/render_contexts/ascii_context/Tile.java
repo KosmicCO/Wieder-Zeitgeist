@@ -18,6 +18,9 @@ public class Tile {
     public final Color back;
     
     public Tile(int id, Color fore, Color back){
+        if(fore == null || back == null){
+            throw new IllegalArgumentException("The colors must not be null");
+        }
         this.id = id;
         this.fore = fore;
         this.back = back;

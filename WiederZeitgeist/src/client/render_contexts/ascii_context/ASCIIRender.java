@@ -7,9 +7,12 @@ package client.render_contexts.ascii_context;
 
 import engine.Settings;
 import graphics.Camera;
+import graphics.Color;
 import util.math.IntVectorN;
 import util.math.Transformation;
 import util.math.Vec2d;
+import util.math.VectorN;
+import static util.math.VectorN.EPSILON;
 
 /**
  *
@@ -44,10 +47,55 @@ public class ASCIIRender {
         }
     }
 
+    public static void drawRect(VectorN position, VectorN rectSize, Tile tile) {
+        if (tile == null) {
+            throw new IllegalArgumentException("Tile cannot be null");
+        }
+        VectorN correction = rectSize.map(v -> Math.min(v, 0));
+        VectorN pos1 = position.add(correction);
+        VectorN pos = pos1.map(v -> Math.max(v, 0));
+        VectorN endpos = rectSize.sub(correction.mult(2)).sub(pos.sub(pos1)).bimap((v, d) -> Math.min(v, d), renderDim.toVectorN()).add(pos);
+
+        if (renderDim.x() > 0 && renderDim.y() > 0) {
+            for (int i = (int) pos.x(); i < endpos.x() - EPSILON; i++) {
+                for (int j = (int) pos.y(); j < endpos.y() - EPSILON; j++) {
+                    checklessDrawTile(i, j, tile);
+                }
+            }
+        }
+    }
+
+    public static void fill(Tile tile){
+        for (int i = 0; i < renderDim.x(); i++) {
+            for (int j = 0; j < renderDim.y(); j++) {
+                tileBuffer[i][j] = tile;
+            }
+        }
+    }
+    
+    public static void drawForeground(int x, int y, int tileID, Color color) {
+        drawTile(x, y, new Tile(tileID, color, Color.CLEAR));
+
+    }
+
+    public static void checklessDrawTile(int x, int y, Tile t) {
+        
+        if(t.back.a == 1){
+            tileBuffer[x][y] = t;
+        }else{
+            Tile under = tileBuffer[x][y];
+            if(under == null){
+                tileBuffer[x][y] = t;
+            }
+            tileBuffer[x][y] = new Tile(t.id, t.fore, under.back.alphaMix(t.back));
+        }
+        
+    }
+
     public static void drawTile(int x, int y, Tile t) {
         if (renderDim.x() <= x || x < 0 || renderDim.y() <= y || y < 0) {
             throw new IllegalArgumentException("Given coordinates are not in bounds: (" + x + ", " + y + ").");
         }
-        tileBuffer[x][y] = t;
+        checklessDrawTile(x, y, t);
     }
 }
